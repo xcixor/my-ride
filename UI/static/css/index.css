@@ -1,6 +1,5 @@
 body {
-    /* background: linear-gradient(to right, red, blue); */
-    background: linear-gradient(45deg, #13547a 0%, #438b9c 50%, #80d0c7 100%);
+    color: white;
 }
 
 .grid {
@@ -30,8 +29,6 @@ body {
     grid-area: attention-call;
     justify-self: center;
     width: 100%;
-    /* position: absolute; */
-    /* z-index: 1; */
 }
 
 .attention-call p,
@@ -114,7 +111,6 @@ h1 {
 }
 
 img {
-    /* border-radius: 5px 5px 0 0; */
     width: 80%;
     border-radius: 50%;
 }
@@ -159,7 +155,6 @@ img {
 
 .action-call {
     grid-area: action-call;
-    /* justify-self: center; */
     text-align: center;
     padding-top: 40px;
 }
@@ -179,7 +174,6 @@ img {
         grid-template-rows: auto 300px 300px 100px 320px 1fr 200px 200px;
         grid-template-areas: ". navigation ." ". attention ." ". self-selection ." ". testimonial-heading ." ". testimonials ." ". product ." ". action-call ." ". footer .";
         grid-row-gap: 35px;
-        /* background-color: #13547a; */
     }
     .attention {
         grid-area: attention;
@@ -212,7 +206,6 @@ img {
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr;
         grid-template-areas: "section-one section-two";
-        /* position: relative; */
     }
     .section-one {
       justify-self: center;
