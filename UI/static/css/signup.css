@@ -22,8 +22,6 @@ body {
     border-radius: 10px;
     display: grid;
     grid-template-areas: "profile-img" "sign-up-form";
-    /* padding: 10px;
-    padding-right: 20px; */
 }
 
 .profile-img {
@@ -48,8 +46,6 @@ form {
     border-top: solid 0.05em;
     border-color: #E8E8E8;
     width: 400px;
-    /* margin-left: 10px; */
-    /* margin-right: 20px; */
     padding: 10px;
 }
 
@@ -83,12 +79,6 @@ h2:before {
 .form-element {
     margin-bottom: 20px;
 }
-
-.form-elements {
-    /* padding: 20px; */
-    /* justify-self: center; */
-}
-
 input[type=text],
 input[type=password] {
     width: 100%;
@@ -98,7 +88,6 @@ input[type=password] {
     border-color: #E8E8E8;
     padding-left: 10px;
     border-radius: 5px;
-    /* padding-right: 10px; */
 }
 
 .signup-btn {
