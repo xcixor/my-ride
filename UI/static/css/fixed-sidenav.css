@@ -1,0 +1,21 @@
+.sidenav-fixed {
+    width: 100%;
+    padding-top: 20px;
+}
+
+.sidenav-fixed a {
+    padding: 20px 10px 20px 20px;
+    font-size: 22pt;
+    color: white;
+    display: block;
+}
+
+.sidenav-fixed a:hover {
+    color: #f1f1f1;
+}
+
+.side-menu {
+    height: 100%;
+    margin-left: 50%;
+    background-color: #13547a;
+}
