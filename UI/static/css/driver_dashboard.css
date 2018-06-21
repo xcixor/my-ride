@@ -85,37 +85,6 @@ button :hover {
     height: 35px;
     opacity: 1;
 }
-.sidenav {
-    height: 100%;
-    width: 0;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    background-color: #13547a;
-    overflow-x: hidden;
-    transition: 0.5s;
-    padding-top: 60px;
-}
-
-.sidenav a {
-    padding: 8px 8px 8px 32px;
-    font-size: 20pt;
-    color: white;
-    display: block;
-    transition: 0.3s;
-}
-
-.sidenav a:hover {
-    color: #1e1e1e;
-}
-.sidenav .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 40px;
-    margin-left: 50px;
-}
 .float {
     position: fixed;
     width: 60px;
@@ -133,7 +102,7 @@ button :hover {
     margin-top: 22px;
 }
 
-@media screen and (max-height: 450px) {
+/* @media screen and (max-height: 450px) {
     .sidenav {
         padding-top: 15px;
     }
@@ -141,7 +110,7 @@ button :hover {
         font-size: 18px;
         width: 250px;
     }
-}
+} */
 @media screen and (max-width: 736px) {
     .sidenav-fixed {
         display: none;

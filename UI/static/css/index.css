@@ -11,9 +11,10 @@ body {
 
 .navigation {
     grid-area: navigation;
-    justify-self: center;
 }
-
+.nav-wide {
+    display: none;
+}
 .attention {
     grid-area: attention;
     background-image: url("../images/taxi1.jpeg");
@@ -174,6 +175,13 @@ img {
         grid-template-rows: auto 300px 300px 100px 320px 1fr 200px 200px;
         grid-template-areas: ". navigation ." ". attention ." ". self-selection ." ". testimonial-heading ." ". testimonials ." ". product ." ". action-call ." ". footer .";
         grid-row-gap: 35px;
+    }
+    .nav-mobile {
+        display: none;
+    }
+    .nav-wide {
+        display: block;
+        visibility: visible;
     }
     .attention {
         grid-area: attention;
