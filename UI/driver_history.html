@@ -9,27 +9,40 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
         crossorigin="anonymous">
     <link rel="stylesheet" href="static/css/navbar.css">
+    <link rel="stylesheet" href="static/css/mobile_nav.css">
     <title>my-ride</title>
 </head>
 <body>
     <div class="container">
         <div class="navigation">
-            <nav>
-                <ul>
-                    <li>
-                        <a href="index.html">my-ride</a>
-                    </li>
-                    <li>
-                        <a href="rides.html">Rides</a>
-                    </li>
-                    <li class="nav-left">
-                        <a href="signup.html">Join us</a>
-                    </li>
-                    <li class="nav-left">
-                        <a href="login.html">Login</a>
-                    </li>
-                </ul>
-            </nav>
+            <div class="nav-wide">
+                <nav>
+                    <ul>
+                        <li>
+                            <a href="#">my-ride</a>
+                        </li>
+                        <li>
+                            <a href="rides.html">Rides</a>
+                        </li>
+                        <li class="nav-left">
+                            <a href="signup.html">Join us</a>
+                        </li>
+                        <li class="nav-left">
+                            <a href="login.html">Login</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="side-nav nav-mobile">
+                <div id="dash-sidenav" class="sidenav">
+                    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                    <a href="index.html">my-ride</a>
+                    <a href="rides.html">Rides</a>
+                    <a href="signup.html">Join us</a>
+                    <a href="login.html">Login</a>
+                </div>
+                <span style="font-size:30px;cursor:pointer; padding: 20px;" onclick="openNav()">&#9776;</span>
+            </div>
         </div>
         <div class="content">
             <div class="inner-content">
@@ -61,5 +74,7 @@
             </div>
         </div>
     </div>
+    <!-- scripts -->
+    <script src="static/js/driver_dashboard.js"></script>
 </body>
 </html>

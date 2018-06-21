@@ -38,3 +38,17 @@ ul li a:hover {
     background-color: #13547a;
     padding: 5px;
 }
+
+.nav-wide {
+    display: none;
+}
+
+@media screen and (min-width: 736px) {
+    .nav-mobile {
+        display: none;
+    }
+    .nav-wide {
+        display: block;
+        visibility: visible;
+    }
+}
