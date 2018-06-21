@@ -73,7 +73,7 @@ button {
         grid-template-areas: ". navigation ." ". main-content ." ". footer .";
     }
     .card {
-        width: 50%;
+        width: 60%;
         height: 75%;
     }
     .footer {
@@ -83,6 +83,6 @@ button {
         margin-top: 150px;
     }
     .card {
-        margin-left: 25%;
+        margin-left: 20%;
     }
 }
