@@ -6,7 +6,7 @@ body {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-areas: "navigation" "attention" "self-selection" "testimonial-heading" "testimonials" "product" "action-call" "footer";
-    grid-template-rows: auto 300px 300px 50px 200px 1fr 100px 200px;
+    grid-template-rows: auto auto auto auto auto auto auto auto;
 }
 
 .navigation {
@@ -165,7 +165,7 @@ img {
     background-color: #13547a;
     color: white;
     text-align: center;
-    padding-top: 40px;
+    padding: 40px 0 20px 0;
 }
 
 @media screen and (min-width: 736px) {
