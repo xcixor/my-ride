@@ -1,0 +1,122 @@
+body {
+    height: 100vh;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    grid-template-areas: "ride-content";
+    height: 100vh;
+}
+
+.content {
+    width: 100%;
+    grid-area: ride-content;
+    background-color: whitesmoke;
+    justify-self: center;
+}
+
+form {
+    border-color: #E8E8E8;
+    padding: 10px;
+}
+
+h2 {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h2:after {
+    display: inline-block;
+    margin: 0 0 8px 10px;
+    height: 2px;
+    content: " ";
+    text-shadow: none;
+    background-color: black;
+    width: 30px;
+}
+
+h2:before {
+    display: inline-block;
+    margin: 0 10px 8px 0;
+    height: 2px;
+    content: " ";
+    text-shadow: none;
+    background-color: black;
+    width: 30px;
+}
+
+.ride-form {
+    margin-top: 50px;
+}
+
+.form-element {
+    margin-bottom: 20px;
+}
+
+input[type=text],
+input[type=password] {
+    width: 100%;
+    height: 50px;
+    background: whitesmoke;
+    border: solid 0.05em;
+    border-color: #E8E8E8;
+    border-radius: 5px;
+}
+
+input::placeholder {
+    color: red;
+    padding-left: 10px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    height: 50px;
+    border: none;
+    cursor: pointer;
+    width: 100px;
+    opacity: 0.8;
+    font-size: 14pt;
+    float: right;
+    margin-left: 20px;
+}
+
+.form-element-group h3,
+input {
+    margin-bottom: 10px;
+}
+
+@media screen and (min-width: 736px) {
+    .container {
+        display: grid;
+        grid-template-columns: 30% 1fr 30%;
+        grid-auto-rows: 600px;
+        grid-template-areas: ". ride-content .";
+        height: 100vh;
+        margin-top: 150px;
+    }
+    .content {
+        border-radius: 30px;
+        height: 500px;
+    }
+    .ride-form {
+        margin-top: 50px;
+    }
+    form {
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+    h2:after {
+        margin: 0 0 8px 20px;
+        width: 100px;
+    }
+    h2:before {
+        margin: 0 20px 8px 0;
+        width: 100px;
+    }
+}
