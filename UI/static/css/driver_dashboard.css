@@ -101,16 +101,6 @@ button :hover {
 .float-btn {
     margin-top: 22px;
 }
-
-/* @media screen and (max-height: 450px) {
-    .sidenav {
-        padding-top: 15px;
-    }
-    .sidenav a {
-        font-size: 18px;
-        width: 250px;
-    }
-} */
 @media screen and (max-width: 736px) {
     .sidenav-fixed {
         display: none;

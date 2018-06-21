@@ -11,7 +11,6 @@ body {
 }
 
 .content {
-    /* height: 500px; */
     width: 100%;
     grid-area: ride-content;
     background-color: whitesmoke;

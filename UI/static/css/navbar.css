@@ -7,9 +7,6 @@ nav {
     height: 100px;
     color: white;
 }
-
-ul {}
-
 ul li {
     list-style: none;
     display: inline-block;

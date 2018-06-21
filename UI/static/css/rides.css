@@ -1,9 +1,9 @@
 .container {
     height: 100vh;
     display: grid;
-    grid-template-columns: 15% 1fr 15%;
-    grid-template-rows: auto 700px 1fr;
-    grid-template-areas: ". navigation ." ". rides-content ." ". footer .";
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas: "navigation" "rides-content" "footer";
 }
 
 .navigation {

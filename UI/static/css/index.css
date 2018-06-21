@@ -12,9 +12,6 @@ body {
 .navigation {
     grid-area: navigation;
 }
-/* .nav-wide {
-    display: none;
-} */
 .attention {
     grid-area: attention;
     background-image: url("../images/taxi1.jpeg");
