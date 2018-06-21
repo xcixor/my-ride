@@ -15,8 +15,6 @@
 }
 
 .inner-content {
-    /* padding: 50px; */
-    /* background-color: yellow; */
     justify-self: flex-end;
 }
 
@@ -25,11 +23,19 @@
     display: flex;
 }
 
-th,
-td {
-    padding: 10px 40px 0 0;
+.request {
+    display: flex;
 }
-
+.column {
+    flex: 40%;
+}
+#passenger {
+    flex: 40%;
+    font-size: 16pt;
+}
+#confirmation {
+    flex: 60%;
+}
 .card {
     width: 100%;
     height: 75%;
@@ -43,7 +49,7 @@ td {
 }
 
 .card-content {
-    padding: 5px 15px;
+    padding: 20px 20px;
 }
 
 .checked {
@@ -56,14 +62,17 @@ button {
     height: 30px;
     border: none;
     cursor: pointer;
-    width: 150px;
+    width: 60px;
     opacity: 0.8;
     font-size: 12pt;
     padding: 5px;
     border-radius: 3px;
     margin-bottom: 5px;
 }
-
+#back {
+    float: right;
+    margin: 50px 110px 0 0;
+}
 .buttons {
     margin-top: 5px;
 }

@@ -5,13 +5,13 @@ body {
 .container {
     display: grid;
     grid-template-columns: 1fr;
-    grid-auto-rows: 600px;
+    grid-auto-rows: auto;
     grid-template-areas: "ride-content";
     height: 100vh;
 }
 
 .content {
-    height: 500px;
+    /* height: 500px; */
     width: 100%;
     grid-area: ride-content;
     background-color: whitesmoke;
@@ -103,6 +103,7 @@ input {
     }
     .content {
         border-radius: 30px;
+        height: 500px;
     }
     .ride-form {
         margin-top: 50px;
