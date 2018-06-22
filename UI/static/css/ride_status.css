@@ -1,0 +1,126 @@
+.container {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas: "navigation" "main-content" "footer";
+}
+
+.navigation {
+    grid-area: navigation;
+}
+
+.content {
+    grid-area: main-content;
+}
+
+.inner-content {
+    justify-self: flex-end;
+}
+
+.ride-status {
+    grid-area: ride-status;
+    display: flex;
+}
+
+.request {
+    display: flex;
+}
+
+.column {
+    flex: 40%;
+}
+
+#passenger {
+    flex: 40%;
+    font-size: 16pt;
+}
+
+#confirmation {
+    flex: 60%;
+}
+
+.card {
+    width: 100%;
+    height: 75%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    background-color: orange;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.card-content {
+    padding: 20px 20px;
+}
+
+.checked {
+    color: red;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    height: 30px;
+    border: none;
+    cursor: pointer;
+    width: 60px;
+    opacity: 0.8;
+    font-size: 12pt;
+    padding: 5px;
+    border-radius: 3px;
+    margin-bottom: 5px;
+}
+
+#back {
+    float: right;
+    margin: 20px 25px 20px 0;
+}
+
+.buttons {
+    margin-top: 5px;
+}
+
+.footer {
+    grid-area: footer;
+    background-color: #13547a;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+@media screen and (min-width: 736px) {
+    .container {
+        height: 100vh;
+        display: grid;
+        grid-template-columns: 15% 1fr 15%;
+        grid-template-rows: auto 700px 1fr;
+        grid-template-areas: ". navigation ." ". main-content ." ". footer .";
+    }
+    .content {
+        display: grid;
+        grid-template-columns: 50% 50%;
+        grid-template-rows: auto;
+        grid-template-areas: "inner-content ride-status";
+    }
+    .footer {
+        padding-top: 100px;
+    }
+    .content {
+        margin-top: 50px;
+    }
+    .small-card {
+        width: 100%;
+        margin-top: 25%;
+        height: 50%;
+    }
+    .big-card {
+        height: 100%;
+        width: 75%;
+    }
+    #back {
+        margin: 50px 110px 0 0;
+    }
+}
