@@ -1,7 +1,7 @@
 .container {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto 1fr auto;
+    grid-template-rows: auto auto auto auto;
     grid-template-areas: "side-nav" "welcome" "dashboard" "footer";
     height: 100vh;
 }
@@ -40,7 +40,7 @@
 
 .card {
     width: 75%;
-    height: 75%;
+    height: 100%;
     margin-left: 12.5%;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     transition: 0.3s;
