@@ -68,8 +68,7 @@ button :hover {
 
 #back {
     width: 100px;
-    width: 100px;
-    margin: 100px 165px;
+    margin: 50px 50px;
     float: right;
 }
 
@@ -82,7 +81,6 @@ button :hover {
     }
     .inner-content {
         margin-top: 100px;
-        background-color: orange;
     }
     .card {
         height: 100%;
@@ -91,5 +89,8 @@ button :hover {
     }
     .card-left {
         margin-left: 25%;
+    }
+    #back {
+        margin: 100px 165px;
     }
 }
