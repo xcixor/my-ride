@@ -8,10 +8,11 @@
 
 .inner-content {
     grid-area: main-content;
+    background-color: orange;
 }
 
 p {
-    padding: 15px;
+    padding-bottom: 15px;
 }
 
 .card {
@@ -44,7 +45,7 @@ p {
 
 .card-content {
     padding: 5px 15px;
-    font-size: 18pt;
+    font-size: 16pt;
 }
 
 button {
@@ -64,11 +65,13 @@ button :hover {
     height: 35px;
     opacity: 1;
 }
+
 #back {
     width: 100px;
     margin-top: 20px;
     margin-left: 10px;
 }
+
 @media screen and (min-width: 736px) {
     .container {
         display: grid;
@@ -78,6 +81,7 @@ button :hover {
     }
     .inner-content {
         margin-top: 100px;
+        background-color: #13547a;
     }
     .card {
         height: 100%;
