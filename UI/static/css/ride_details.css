@@ -32,6 +32,7 @@
 
 .card-content {
     padding: 5px 15px;
+    font-size: 14pt;
 }
 
 .checked {
@@ -74,13 +75,10 @@ button {
     }
     .card {
         width: 60%;
-        height: 75%;
+        height: 100%;
     }
     .footer {
         padding-top: 100px;
-    }
-    .content {
-        margin-top: 150px;
     }
     .card {
         margin-left: 20%;
