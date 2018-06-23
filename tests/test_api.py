@@ -18,7 +18,8 @@ class TestApi(unittest.TestCase):
                      "Origin": "Kutus",
                      "Time": "9:00",
                      "Name": "a ride to meru",
-                     "Date": "23-6-2018"}
+                     "Date": "23-6-2018",
+                     "Ride Owner": "p@g.com"}
         self.request = {
             "Passenger Name": "Njobu",
             "Tel": "+254716272376"

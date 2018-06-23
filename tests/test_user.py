@@ -30,12 +30,6 @@ class TestUser(unittest.TestCase):
         self.user.create_user(self.user_data)
         self.assertDictContainsSubset(self.user_data, self.user.get_user(1))
 
-    def cannot_create_duplicate_user(self):
-        """Test the same user cannot create an account twice."""
-        self.user.create_user(self.user_data)
-        res = self.user.create_user(self.user_data)
-        self.assertEqual(res.get('message'), 'That user already exists')
-
     def test_validate_email(self):
         """Test user cannot register with invalid email."""
         user = {"Email": "dong.com", "Password": "pass123",
@@ -50,6 +44,12 @@ class TestUser(unittest.TestCase):
         res = self.user.create_user(user)
         self.assertEqual(res.get('message'), 'Password should not be less \
                          than eight charcters')
+
+    def cannot_create_duplicate_user(self):
+        """Test the same user cannot create an account twice."""
+        self.user.create_user(self.user_data)
+        res = self.user.create_user(self.user_data)
+        self.assertEqual(res.get('message'), 'That user already exists')
 
     def test_update_user_details(self):
         """Test user can update their user details."""

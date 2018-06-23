@@ -65,12 +65,11 @@ class TestRide(unittest.TestCase):
         """Test a request can be made successfuly."""
         res = self.ride.create_ride(self.ride_data)
         self.assertTrue(res)
-        request_data = {"User": "p@g.com", "Ride Owner": "james",
+        request_data = {"Passenger": "p@g.com", "Ride Owner": "james",
                         "Ride Name": "mwisho wa reli"}
         self.ride.request_ride(request_data)
-        self.assertCountEqual(self.ride.get_ride(1)['requests'],
-                              [{"User": "p@g.com", "Ride Owner": "james",
-                                "Ride Name": "mwisho wa reli"}])
+        self.assertCountEqual(self.ride.get_ride(
+            1)['requests'], [request_data])
 
     def test_get_ride_requests(self):
         """Test ride requests can be retrieved."""
@@ -80,7 +79,7 @@ class TestRide(unittest.TestCase):
                         "Ride Name": "mwisho wa reli"}
         self.ride.request_ride(request_data)
         init_len = len(self.ride.get_requests('mwisho wa reli', 'james'))
-        request_data = {"User": "m@y.com", "Ride Owner": "james",
+        request_data = {"Passenger": "m@y.com", "Ride Owner": "james",
                         "Ride Name": "mwisho wa reli"}
         self.ride.request_ride(request_data)
         new_len = len(self.ride.get_requests('mwisho wa reli', 'james'))
