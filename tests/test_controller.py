@@ -25,13 +25,13 @@ class TestController(unittest.TestCase):
             "Ride Owner": "p@g.com"
         }
 
-    def test_cannot_create_ride_with_incomplete_data(self):
+    def test_incomplete_data_ride_creation(self):
         """Tests exception is raised if ride data contains missing fields."""
         self.assertRaises(Exception, self.controller.create_ride({
-                "Name": "Into the badlands",
-                "Destination": "Kirinyaga",
-                "Time": "7:30",
-            }))
+            "Name": "Into the badlands",
+            "Destination": "Kirinyaga",
+            "Time": "7:30",
+        }))
 
     def test_create_user(self):
         """Test create user success."""
@@ -59,7 +59,7 @@ class TestController(unittest.TestCase):
         result = self.controller.create_ride(self.ride_data)
         self.assertEqual(result.get('message'), 'Ride created successfuly')
 
-    def test_unregistered_user_cannot_create_ride(self):
+    def test_create_ride_unregistered(self):
         """Test unregistred user is not allowed to create a ride."""
         res = self.controller.create_ride(self.ride_data)
         self.assertEqual(res.get('message'), 'That user does not exist')
@@ -107,7 +107,7 @@ class TestController(unittest.TestCase):
         result = self.controller.create_ride(self.ride_data)
         self.assertTrue(result.get('status'))
 
-        resp = self.controller.make_response(
+        resp = self.controller.request_ride(
             {"Passenger": "m@y.com",
              "Ride Owner": "james",
              "Ride Name": "mwisho wa reli"})
@@ -122,12 +122,12 @@ class TestController(unittest.TestCase):
         result = self.controller.create_ride(self.ride_data)
         self.assertTrue(result.get('status'))
 
-        self.controller.make_response(
+        self.controller.request_ride(
             {"Passenger": "m@y.com",
              "Ride Owner": "james",
              "Ride Name": "mwisho wa reli"})
         init_len = len(self.controller.get_requests('mwisho wa reli', 'james'))
-        self.controller.make_response(
+        self.controller.request_ride(
             {"Passenger": "koigi@g.com",
              "Ride Owner": "james",
              "Ride Name": "mwisho wa reli"})

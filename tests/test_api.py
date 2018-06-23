@@ -72,7 +72,7 @@ class TestApi(unittest.TestCase):
         logins = {"Email": "p@g.com", "Password": "pass123"}
         res = self.client().post('api/v1/auth/login', data=logins)
         self.assertEqual(res, 200)
-        details = {"Email":"p@g.com", "National Id": "34599323",
+        details = {"Email": "p@g.com", "National Id": "34599323",
                    "Vehicle Registration": "KCD E343"}
         result = self.client().put('api/v1/auth/profile', data=details)
         self.assertEqual(result, 200)
@@ -84,7 +84,7 @@ class TestApi(unittest.TestCase):
         logins = {"Email": "p@g.com", "Password": "pass123"}
         res = self.client().post('api/v1/auth/login', data=logins)
         self.assertEqual(res, 200)
-        details = {"Email":"p@g.com", "National Id": "34599323",
+        details = {"Email": "p@g.com", "National Id": "34599323",
                    "Tel No": "+254712705422"}
         result = self.client().post('api/v1/auth/profile', data=details)
         self.assertEqual(result, 200)
