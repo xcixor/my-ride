@@ -11,12 +11,13 @@ class TestApi(unittest.TestCase):
     def setUp(self):
         """Initialize objects for the tests."""
         self.user = {"Email": "p@g.com",
-                     "Type": "driver"
+                     "Type": "driver",
                      "Password": "pass123",
                      "Confirm Password": "pass123"}
         self.ride = {"Destination": "Meru",
                      "Origin": "Kutus",
                      "Time": "9:00",
+                     "Name": "a ride to meru",
                      "Date": "23-6-2018"}
         self.request = {
             "Passenger Name": "Njobu",
@@ -59,6 +60,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response, 201)
         logins = {"Email": "p@g.com", "Password": "pass123"}
         res = self.client().post('api/v1/auth/login', data=logins)
+        self.assertEqual(res, 200)
         result = self.client().post('api/v1/auth/logout')
         self.assertEqual(result, 200)
 
@@ -68,9 +70,10 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response, 201)
         logins = {"Email": "p@g.com", "Password": "pass123"}
         res = self.client().post('api/v1/auth/login', data=logins)
+        self.assertEqual(res, 200)
         details = {"Password": "pass123", "National Id": "34599323",
                    "Vehicle Registration": "KCD E343"}
-        result = self.client().post('api/v1/auth/profile')
+        result = self.client().put('api/v1/auth/profile', data=details)
         self.assertEqual(result, 200)
 
     def test_get_user_profile(self):
@@ -79,12 +82,13 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response, 201)
         logins = {"Email": "p@g.com", "Password": "pass123"}
         res = self.client().post('api/v1/auth/login', data=logins)
+        self.assertEqual(res, 200)
         details = {"Password": "pass123", "National Id": "34599323",
                    "Tel No": "+254712705422"}
-        result = self.client().post('api/v1/auth/profile')
+        result = self.client().post('api/v1/auth/profile', data=details)
         self.assertEqual(result, 200)
         result = self.client().get('api/v1/auth/profile')
-        self.assertIn('KCD E343', str(result.data))
+        self.assertIn('+254712705422', str(result.data))
 
     def test_create_ride(self):
         """Test user can create a ride successfuly."""
