@@ -69,7 +69,8 @@ class TestApi(unittest.TestCase):
 
     def test_logout_sucess(self):
         """Test user can logout successfuly."""
-        response = self.client().post('api/v1/auth/register', data=self.passenger)
+        response = self.client().post('api/v1/auth/register',
+                                      data=self.passenger)
         self.assertEqual(response, 201)
 
         logins = {"Email": "esta@x.com", "Password": "pass234"}
