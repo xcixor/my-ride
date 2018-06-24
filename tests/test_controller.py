@@ -25,7 +25,7 @@ class TestController(unittest.TestCase):
             "Ride Owner": "p@g.com"
         }
 
-    def test_incomplete_data_ride_creation(self):
+    def test_create_ride_with_incomplete_data_exception_raised(self):
         """Tests exception is raised if ride data contains missing fields."""
         self.assertRaises(Exception, self.controller.create_ride({
             "Name": "Into the badlands",
@@ -33,25 +33,25 @@ class TestController(unittest.TestCase):
             "Time": "7:30",
         }))
 
-    def test_create_user(self):
+    def test_create_user_with_mandatory_fields_success(self):
         """Test create user success."""
         res = self.controller.create_user(self.user_data)
         self.assertEqual(res.get('message'), 'User created successfuly')
 
-    def test_login(self):
+    def test_login_if_registered_success(self):
         """Test registered user can log in."""
         self.controller.create_user(self.user_data)
         res = self.controller.login(
             {"Email": 'p@g.com', "Password": "pass123"})
         self.assertTrue(res.get('message'), 'Successfuly Logged in')
 
-    def test_unregistered_user_login(self):
+    def test_login_if_unregistered_false(self):
         """Test unregistered user cannnot login."""
         res = self.controller.login(
             {"Email": 'p@g.com', "Password": "pass123"})
         self.assertTrue(res.get('message'), 'Logged in Successfuly')
 
-    def test_create_ride(self):
+    def test_create_ride_if_logged_in_success(self):
         """Test succesful creation of ride for registered user."""
         res = self.controller.create_user(self.user_data)
         self.assertTrue(res.get('status'))
@@ -59,12 +59,12 @@ class TestController(unittest.TestCase):
         result = self.controller.create_ride(self.ride_data)
         self.assertEqual(result.get('message'), 'Ride created successfuly')
 
-    def test_create_ride_unregistered(self):
+    def test_create_ride_unregistered_false(self):
         """Test unregistred user is not allowed to create a ride."""
         res = self.controller.create_ride(self.ride_data)
         self.assertEqual(res.get('message'), 'That user does not exist')
 
-    def test_update_ride(self):
+    def test_update_ride_if_registered_success(self):
         """Test successful ride update for registered user."""
         res = self.controller.create_user(self.user_data)
         self.assertTrue(res.get('status'))
@@ -77,7 +77,7 @@ class TestController(unittest.TestCase):
             "p@g.com", "voyage to meru", update_data)
         self.assertEqual(resp.get('message'), "Ride update Successfuly")
 
-    def test_get_user_rides(self):
+    def test_get_user_rides_if_registered_success(self):
         """Test rides for registed user can be retrieved."""
         res = self.controller.create_user(self.user_data)
         self.assertTrue(res.get('status'))
@@ -88,7 +88,7 @@ class TestController(unittest.TestCase):
         resp = self.controller.get_user_rides("p@g.com")
         self.assertDictContainsSubset(resp.get('message'), self.ride_data)
 
-    def test_get_all_rides(self):
+    def test_get_all_rides_if_exists_success(self):
         """Test all created rides can be retrieved."""
         res = self.controller.create_user(self.user_data)
         self.assertTrue(res.get('status'))
@@ -99,7 +99,7 @@ class TestController(unittest.TestCase):
         resp = self.controller.get_all_rides()
         self.assertDictContainsSubset(resp.get('message'), self.ride_data)
 
-    def test_make_request(self):
+    def test_make_request_if_exists_success(self):
         """Test existing ride can be requested."""
         res = self.controller.create_user(self.user_data)
         self.assertTrue(res.get('status'))
@@ -114,7 +114,7 @@ class TestController(unittest.TestCase):
 
         self.assertEqual(resp.get('message'), 'Request succesful')
 
-    def retrieve_requests(self):
+    def retrieve_requests_if_ride_exists_success(self):
         """Test existing ride's requests can be retrieved."""
         res = self.controller.create_user(self.user_data)
         self.assertTrue(res.get('status'))

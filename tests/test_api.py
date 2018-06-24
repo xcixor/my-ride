@@ -1,7 +1,7 @@
 """Contains tests for api endpoints."""
 
 import unittest
-
+import json
 from app import create_app
 
 
@@ -10,16 +10,26 @@ class TestApi(unittest.TestCase):
 
     def setUp(self):
         """Initialize objects for the tests."""
-        self.user = {"Email": "p@g.com",
-                     "Type": "driver",
-                     "Password": "pass123",
-                     "Confirm Password": "pass123"}
-        self.ride = {"Destination": "Meru",
-                     "Origin": "Kutus",
-                     "Time": "9:00",
-                     "Name": "a ride to meru",
-                     "Date": "23-6-2018",
-                     "Ride Owner": "p@g.com"}
+        self.driver = {
+            "Email": "p@g.com",
+            "Type": "driver",
+            "Password": "pass123",
+            "Confirm Password": "pass123"
+        }
+        self.passenger = {
+            "Email": "esta@x.com",
+            "Type": "passenger",
+            "Password": "pass234",
+            "Confirm Password": "pass234"
+        }
+        self.ride = {
+            "Destination": "Meru",
+            "Origin": "Kutus",
+            "Time": "9:00",
+            "Name": "a ride to meru",
+            "Date": "23-6-2018",
+            "Ride Owner": "p@g.com"
+        }
         self.request = {
             "Passenger Name": "Njobu",
             "Tel": "+254716272376"
@@ -33,80 +43,135 @@ class TestApi(unittest.TestCase):
         """Remove objects after test."""
         self.app.context.pop()
         del self.ride
-        del self.user
+        del self.passenger
         del self.request
 
-    def test_register_user(self):
+    def test_register_user_with_correct_credentials_success(self):
         """Test user can register successfuly with correct credentials."""
-        response = self.client().post('/api/v1/auth/register', data=self.user)
+        response = self.client().post('/api/v1/auth/register',
+                                      data=self.passenger)
         self.assertEqual(response, 201)
 
-    def test_login(self):
+    def test_login_with_correct_authentication_success(self):
         """Test user can login with correct credentials."""
-        response = self.client().post('/api/v1/auth/register', data=self.user)
+        response = self.client().post('/api/v1/auth/register',
+                                      data=self.passenger)
         self.assertEqual(response, 201)
-        logins = {"Email": "p@g.com", "Password": "pass123"}
+        logins = {"Email": "esta@x.com", "Password": "pass234"}
         res = self.client().post('/api/v1/auth/login', data=logins)
         self.assertTrue(res, 200)
 
-    def test_unregistered_login(self):
+    def test_login_without_registration_false(self):
         """Test an unregistered user cannot log in."""
-        logins = {"email": "p@g.com", "Password": "pass123"}
+        logins = {"email": "esta@x.com", "Password": "pass234"}
         res = self.client().post('/api/v1/auth/login', data=logins)
         self.assertTrue(res, 403)
 
-    def test_log_out(self):
+    def test_logout_sucess(self):
         """Test user can logout successfuly."""
-        response = self.client().post('api/v1/auth/register', data=self.user)
+        response = self.client().post('api/v1/auth/register', data=self.passenger)
         self.assertEqual(response, 201)
-        logins = {"Email": "p@g.com", "Password": "pass123"}
+
+        logins = {"Email": "esta@x.com", "Password": "pass234"}
         res = self.client().post('api/v1/auth/login', data=logins)
+
         self.assertEqual(res, 200)
         result = self.client().post('api/v1/auth/logout')
         self.assertEqual(result, 200)
 
-    def test_edit_profile(self):
+    def test_edit_profile_if_signed_in_success(self):
         """Test user can edit their profile."""
-        response = self.client().post('api/v1/auth/register', data=self.user)
+        response = self.client().post('api/v1/auth/register',
+                                      data=self.passenger)
         self.assertEqual(response, 201)
-        logins = {"Email": "p@g.com", "Password": "pass123"}
+        logins = {"Email": "esta@x.com", "Password": "pass234"}
         res = self.client().post('api/v1/auth/login', data=logins)
         self.assertEqual(res, 200)
+
+        # get authorization token
+        token = json.loads(res.data.decode('UTF-8'))
+        user_token = token.get('token')
+
         details = {"Email": "p@g.com", "National Id": "34599323",
                    "Vehicle Registration": "KCD E343"}
-        result = self.client().put('api/v1/auth/profile', data=details)
+        result = self.client().put('api/v1/auth/profile', data=details,
+                                   headers={'x-access-token': user_token})
         self.assertEqual(result, 200)
 
-    def test_get_user_profile(self):
+    def test_get_user_profile_if_signed_in_success(self):
         """Test user can view their profile."""
-        response = self.client().post('api/v1/auth/register', data=self.user)
+        response = self.client().post('api/v1/auth/register',
+                                      data=self.passenger)
         self.assertEqual(response, 201)
+
+        logins = {"Email": "esta@x.com", "Password": "pass234"}
+        res = self.client().post('api/v1/auth/login', data=logins)
+        self.assertEqual(res, 200)
+
+        # get authorization token
+        token = json.loads(res.data.decode('UTF-8'))
+        user_token = token.get('token')
+
+        details = {"Email": "estaz@g.com", "National Id": "34599323",
+                   "Tel No": "+254712705422"}
+        result = self.client().post('api/v1/auth/profile', data=details,
+                                    headers={'x-access-token': user_token})
+        self.assertEqual(result, 200)
+
+        result = self.client().get('api/v1/auth/profile',
+                                   headers={'x-access-token': user_token})
+        self.assertIn('+254712705422', str(result.data))
+
+    def test_create_ride_if_signed_in_success(self):
+        """Test user can create a ride successfuly."""
+        # signup
+        response = self.client().post('api/v1/auth/register',
+                                      data=self.driver)
+        self.assertEqual(response, 201)
+
+        # login
         logins = {"Email": "p@g.com", "Password": "pass123"}
         res = self.client().post('api/v1/auth/login', data=logins)
         self.assertEqual(res, 200)
-        details = {"Email": "p@g.com", "National Id": "34599323",
-                   "Tel No": "+254712705422"}
-        result = self.client().post('api/v1/auth/profile', data=details)
-        self.assertEqual(result, 200)
-        result = self.client().get('api/v1/auth/profile')
-        self.assertIn('+254712705422', str(result.data))
 
-    def test_create_ride(self):
-        """Test user can create a ride successfuly."""
-        response = self.client().post('/api/v1/rides', data=self.ride)
+        # get authorization token
+        token = json.loads(res.data.decode('UTF-8'))
+        user_token = token.get('token')
+
+        response = self.client().post('/api/v1/rides', data=self.ride,
+                                      headers={'x-access-token': user_token})
         self.assertEqual(response, 201)
         self.assertIn('Meru', str(response.data))
 
-    def test_edit_ride(self):
+    def test_edit_ride_if_signed_in_success(self):
         """Test user can edit a ride."""
-        response = self.client().post('/api/v1/rides', data=self.ride)
+        # signup
+        response = self.client().post('api/v1/auth/register',
+                                      data=self.driver)
         self.assertEqual(response, 201)
+
+        # login
+        logins = {"Email": "p@g.com", "Password": "pass123"}
+        res = self.client().post('api/v1/auth/login', data=logins)
+        self.assertEqual(res, 200)
+
+        # get authorization token
+        token = json.loads(res.data.decode('UTF-8'))
+        user_token = token.get('token')
+
+        # create ride
+        response = self.client().post('/api/v1/rides', data=self.ride,
+                                      headers={'x-access-token': user_token})
+        self.assertEqual(response, 201)
+
+        # edit the ride
         edit_data = {"Vehicle Color": "Red", "Capacity": 7}
-        res = self.client().put('/api/v1/rides', data=edit_data)
+        res = self.client().put('/api/v1/rides', data=edit_data,
+                                headers={'x-access-token': user_token})
         self.assertEqual(res.status_code, 200)
         self.assertIn('Red', str(res.data))
 
-    def test_get_ride(self):
+    def test_get_ride_if_exists_success(self):
         """Test user can get a ride successfuly."""
         response = self.client().post('/api/v1/rides', data=self.ride)
         self.assertEqual(response, 201)
@@ -114,7 +179,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(res, 200)
         self.assertIn('Meru', str(res.data))
 
-    def test_get_all_rides(self):
+    def test_get_all_rides_if_exists_success(self):
         """Test get all rides offers successfuly."""
         response = self.client().post('/api/v1/rides', data=self.ride)
         self.assertEqual(response, 201)
@@ -122,29 +187,83 @@ class TestApi(unittest.TestCase):
         self.assertEqual(res, 200)
         self.assertIn('Kutus', str(res.data))
 
-    def test_delete_ride(self):
+    def test_delete_ride_if_signed_in_success(self):
         """Test user can delete ride."""
-        response = self.client().post('/api/v1/rides', data=self.ride)
+        # signup
+        response = self.client().post('api/v1/auth/register',
+                                      data=self.driver)
         self.assertEqual(response, 201)
-        res = self.client().delete('/api/v1/rides/1')
+
+        # login
+        logins = {"Email": "p@g.com", "Password": "pass123"}
+        res = self.client().post('api/v1/auth/login', data=logins)
+        self.assertEqual(res, 200)
+
+        # get authorization token
+        token = json.loads(res.data.decode('UTF-8'))
+        user_token = token.get('token')
+
+        # creat ride
+        response = self.client().post('/api/v1/rides', data=self.ride,
+                                      headers={'x-access-token': user_token})
+        self.assertEqual(response, 201)
+
+        # delete ride
+        res = self.client().delete('/api/v1/rides/1',
+                                   headers={'x-access-token': user_token})
         self.assertEqual(res, 200)
         result = self.client().get('api/v1/rides/1')
         self.assertEqual(result, 404)
 
-    def test_make_ride_request(self):
+    def test_make_ride_request_if_signed_in_success(self):
         """Test user can make a request successfuly."""
+        # signup
+        response = self.client().post('api/v1/auth/register',
+                                      data=self.driver)
+        self.assertEqual(response, 201)
+
+        # login
+        logins = {"Email": "p@g.com", "Password": "pass234"}
+        res = self.client().post('api/v1/auth/login', data=logins)
+        self.assertEqual(res, 200)
+
+        # get authorization token
+        token = json.loads(res.data.decode('UTF-8'))
+        user_token = token.get('token')
+
         response = self.client().post('/api/v1/rides', data=self.ride)
         self.assertEqual(response, 201)
-        res = self.client().post('api/v1/rides/1/requests', data=self.request)
+
+        res = self.client().post('api/v1/rides/1/requests', data=self.request,
+                                 headers={'x-access-token': user_token})
         self.assertEqual(res, 201)
         self.assertIn('Njobu', str(res.data))
 
-    def test_get_ride_requests(self):
+    def test_get_ride_requests_if_signed_in_success(self):
         """Test driver can view a ride's request."""
-        response = self.client().post('/api/v1/rides', data=self.ride)
+        # signup
+        response = self.client().post('api/v1/auth/register',
+                                      data=self.driver)
         self.assertEqual(response, 201)
-        res = self.client().post('api/v1/rides/1/requests', data=self.request)
+
+        # login
+        logins = {"Email": "p@g.com", "Password": "pass234"}
+        res = self.client().post('api/v1/auth/login', data=logins)
+        self.assertEqual(res, 200)
+
+        # get authorization token
+        token = json.loads(res.data.decode('UTF-8'))
+        user_token = token.get('token')
+
+        response = self.client().post('/api/v1/rides', data=self.ride,
+                                      headers={'x-access-token': user_token})
+        self.assertEqual(response, 201)
+
+        res = self.client().post('api/v1/rides/1/requests', data=self.request,
+                                 headers={'x-access-token': user_token})
         self.assertEqual(res, 201)
-        result = self.client().get('api/v1/rides/1/requests')
+
+        result = self.client().get('api/v1/rides/1/requests',
+                                   headers={'x-access-token': user_token})
         self.assertEqual(result, 200)
         self.assertIn(result, '+254716272376')

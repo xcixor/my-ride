@@ -16,23 +16,23 @@ class TestRide(unittest.TestCase):
                           "Name": "voyage to meru",
                           "Date": "12-7-2018"}
 
-    def test_create_ride(self):
+    def test_create_ride_with_mandatory_fields_success(self):
         """Test a ride can be created successfuly."""
         res = self.ride.create_ride(self.ride_data)
         self.assertTrue(res)
 
-    def test_create_duplicate_ride(self):
+    def test_create_duplicate_ride_false(self):
         """Test cannot create the same ride twice."""
         self.ride.create_ride(self.ride_data)
         res = self.ride.create_ride(self.ride_data)
         self.assertFalse(res)
 
-    def test_view_ride(self):
+    def test_view_ride_if_exist_success(self):
         """Test if a ride can be viewed."""
         self.ride.create_ride(self.ride_data)
         self.assertDictContainsSubset(self.ride_data, self.ride.get_ride(1))
 
-    def test_view_all_rides(self):
+    def test_view_all_rides_if_exist_success(self):
         """Test if all created rides can be shown."""
         self.ride.create_ride(self.ride_data)
         init_rides = len(self.ride.rides)
@@ -45,7 +45,7 @@ class TestRide(unittest.TestCase):
         new_rides = self.ride.rides
         self.assertEqual(init_rides, new_rides+1)
 
-    def test_update_ride(self):
+    def test_update_ride_if_exist_success(self):
         """Test if a ride can be updated successfuly."""
         res = self.ride.create_ride(self.ride_data)
         self.assertTrue(res)
@@ -53,7 +53,7 @@ class TestRide(unittest.TestCase):
         self.ride.update_ride(update_data)
         self.assertDictContainsSubset(update_data, self.ride.get_ride(1))
 
-    def test_delete_ride(self):
+    def test_delete_ride_if_exist_success(self):
         """Test ride can be deleted successfuly."""
         res = self.ride.create_ride(self.ride_data)
         self.assertTrue(res)
@@ -61,7 +61,7 @@ class TestRide(unittest.TestCase):
         self.assertTrue(result)
         self.assertFalse(self.ride.get_ride('mwisho wa reli'))
 
-    def test_make_ride_request(self):
+    def test_make_ride_request_with_correct_data_success(self):
         """Test a request can be made successfuly."""
         res = self.ride.create_ride(self.ride_data)
         self.assertTrue(res)
@@ -71,7 +71,7 @@ class TestRide(unittest.TestCase):
         self.assertCountEqual(self.ride.get_ride(
             1)['requests'], [request_data])
 
-    def test_get_ride_requests(self):
+    def test_get_ride_requests_if_created_success(self):
         """Test ride requests can be retrieved."""
         res = self.ride.create_ride(self.ride_data)
         self.assertTrue(res)
