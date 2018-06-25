@@ -110,3 +110,10 @@ class Ride(object):
                 new_ride = {owner: {name: ride_data}}
                 self.rides.update(new_ride)
                 return {'Status': True, 'Message': '{} Your first ride has been created'.format(owner)}
+
+    def get_rides(self):
+        """Return all rides created."""
+        if not bool(self.rides):
+            return {'Status': 'There are no rides at this moment'}
+        else:
+            return {'Status': True, 'Message': self.rides}

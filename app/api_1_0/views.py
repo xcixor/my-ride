@@ -86,32 +86,34 @@ class RideCreation(Resource):
 
     def __init__(self):
         """Register params."""
-        self.parser = reqparse.RequestParser()
-        self.parser.add_argument(
-            'Ride Name', type=str, help='Please provide name of your vehicle', required=True)
-        self.parser.add_argument(
-            'Capacity', type=str, help='Please provide number of people it carries', required=True)
-        self.parser.add_argument(
-            'Origin', type=str, help='Please the starting point', required=True)
-        self.parser.add_argument(
-            'Destination', type=str, help='Please provide your destination', required=True)
-        self.parser.add_argument(
-            'Date', type=str, help='Please provide the date', required=True)
-        self.parser.add_argument(
-            'Time', type=str, help='Please provide the departure time', required=True)
-        self.args = self.parser.parse_args()
+        pass
+
 
 
     @authentication_required
     def post(self):
         """Create ride."""
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'Ride Name', type=str, help='Please provide name of your vehicle', required=True)
+        parser.add_argument(
+            'Capacity', type=str, help='Please provide number of people it carries', required=True)
+        parser.add_argument(
+            'Origin', type=str, help='Please the starting point', required=True)
+        parser.add_argument(
+            'Destination', type=str, help='Please provide your destination', required=True)
+        parser.add_argument(
+            'Date', type=str, help='Please provide the date', required=True)
+        parser.add_argument(
+            'Time', type=str, help='Please provide the departure time', required=True)
+        args = parser.parse_args()
         ride_details = {
-            "Ride Name": self.args.get('Ride Name'),
-            "Capacity": self.args.get('Capacity'),
-            "Origin": self.args.get('Origin'),
-            "Destination": self.args.get('Destination'),
-            "Date": self.args.get('Date'),
-            "Time": self.args.get('Time')
+            "Ride Name": args.get('Ride Name'),
+            "Capacity": args.get('Capacity'),
+            "Origin": args.get('Origin'),
+            "Destination": args.get('Destination'),
+            "Date": args.get('Date'),
+            "Time": args.get('Time')
         }
         owner = session['user']
         ride_details.update({'Owner': owner})
@@ -121,4 +123,14 @@ class RideCreation(Resource):
             return result.get('Message'), status_code
         else:
             status_code = 401
+            return result.get('Message'), status_code
+
+    def get(self):
+        """Retrieve all events."""
+        result = app_controller.get_rides()
+        if result.get('Status'):
+            status_code = 200
+            return result.get('Message'), status_code
+        else:
+            status_code = 404
             return result.get('Message'), status_code

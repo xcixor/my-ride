@@ -71,3 +71,11 @@ class Controller(object):
                 return {'Status': False, 'Message': response.get('Message')}
         else:
             return {'Status': False, 'Message': 'That user does not exist'}
+
+    def get_rides(self):
+        """Get all rides from the rides model."""
+        res = self.ride.get_rides()
+        if res.get('Status'):
+            return {'Status': True, 'Message': res.get('Message')}
+        else:
+            return {'Status': False, 'Message': res.get('Message')}
