@@ -1,6 +1,6 @@
 """Contains tests for User class."""
 import unittest
-from app.api_1_0.models import User
+from app.api_1_0.models import AppUser
 
 
 class TestUser(unittest.TestCase):
@@ -8,7 +8,7 @@ class TestUser(unittest.TestCase):
 
     def setUp(self):
         """Initialize objects to use during testing."""
-        self.user = User()
+        self.user = AppUser()
         self.user_data = {
             "Email": "wamai@gmail.com",
             "Password": "pass123",
@@ -35,21 +35,20 @@ class TestUser(unittest.TestCase):
         user = {"Email": "dong.com", "Password": "pass123",
                 "Confirm Password": "pass123"}
         res = self.user.create_user(user)
-        self.assertEqual(res.get('message'), "Invalid email address")
+        self.assertEqual(res.get('Message'), "Invalid email address!")
 
     def test_register_user_short_password_false(self):
         """Test user cannot register with a verys short password."""
-        user = {"Email": "dong@.com", "Password": "pass123",
-                "Confirm Password": "pass123"}
+        user = {"Email": "dong@g.com", "Password": "pass",
+                "Confirm Password": "pass"}
         res = self.user.create_user(user)
-        self.assertEqual(res.get('message'), 'Password should not be less \
-                         than eight charcters')
+        self.assertEqual(res.get('Message'), 'Password should not be less than six characters!')
 
     def test_create_user_if_already_registred_false(self):
         """Test the same user cannot create an account twice."""
         self.user.create_user(self.user_data)
         res = self.user.create_user(self.user_data)
-        self.assertEqual(res.get('message'), 'That user already exists')
+        self.assertEqual(res.get('Message'), 'That user already exists')
 
     def test_update_user_details_success(self):
         """Test user can update their user details."""

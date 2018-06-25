@@ -3,6 +3,7 @@
 import unittest
 import json
 from app import create_app
+# from flask import create_app
 
 
 class TestApi(unittest.TestCase):
@@ -11,13 +12,13 @@ class TestApi(unittest.TestCase):
     def setUp(self):
         """Initialize objects for the tests."""
         self.driver = {
-            "Email": "p@g.com",
+            "Email": "p@gmail.com",
             "Type": "driver",
             "Password": "pass123",
             "Confirm Password": "pass123"
         }
         self.passenger = {
-            "Email": "esta@x.com",
+            "Email": "esta@gmail.com",
             "Type": "passenger",
             "Password": "pass234",
             "Confirm Password": "pass234"
@@ -36,12 +37,12 @@ class TestApi(unittest.TestCase):
         }
         self.app = create_app('testing')
         self.client = self.app.test_client
-        self.app.context = self.app.context()
-        self.app.context.push()
+        self.app_context = self.app.app_context()
+        self.app_context.push()
 
     def tearDown(self):
         """Remove objects after test."""
-        self.app.context.pop()
+        self.app_context.pop()
         del self.ride
         del self.passenger
         del self.request

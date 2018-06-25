@@ -13,6 +13,7 @@ class TestController(unittest.TestCase):
         self.user_data = {
             "Email": "p@g.com",
             "Password": "pass123",
+            "Type": "passenger",
             "Confirm Password": "pass123"
         }
         self.ride_data = {
@@ -30,7 +31,14 @@ class TestController(unittest.TestCase):
         self.assertRaises(Exception, self.controller.create_ride({
             "Name": "Into the badlands",
             "Destination": "Kirinyaga",
-            "Time": "7:30",
+            "Time": "7:30"
+        }))
+
+    def test_create_user_with_incomplete_data_exception_raised(self):
+        """Tests exception is raised if user detais contains missing fields."""
+        self.assertRaises(Exception, self.controller.create_user({
+            "Email": "pndung@gmail.com",
+            "Password": "pass123"
         }))
 
     def test_create_user_with_mandatory_fields_success(self):
