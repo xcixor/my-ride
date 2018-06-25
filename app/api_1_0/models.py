@@ -137,3 +137,22 @@ class Ride(object):
             return {'Status': True, 'Message': res.get('Message')}
         else:
             return {'Status': False, 'Message': res.get('Message')}
+
+    def make_request(self, ride_id, owner, request_data):
+        """Make a request to join a ride."""
+        res = self.get_ride_by_id(owner, ride_id)
+        if res.get('Status'):
+            user_requests = res.get('Message').get('Requests')
+            user_requests.append(request_data)
+            return {'Status': True, 'Message': 'Request made successfuly'}
+        else:
+            return {'Status': False, 'Message': 'That ride does not exist'}
+            
+    def get_requests(self, owner, ride_id):
+        """Get a ride's requests."""
+        res = self.get_ride_by_id(owner, ride_id)
+        if res.get('Status'):
+            user_requests = res.get('Message').get('Requests')
+            return {'Status': True, 'Message': user_requests}
+        else:
+            return {'Status': False, 'Message': 'That ride does not exist'}

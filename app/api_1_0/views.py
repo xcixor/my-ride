@@ -148,3 +148,22 @@ class RideManipulation(Resource):
         else:
             status_code = 404
             return result.get('Message'), status_code
+
+class Requests(Resource):
+    """Manipulate requests."""
+
+    @authentication_required
+    def post(self, ride_id):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument(
+            'Email', type=str, help='Please provide your email', required=True)
+        self.args = self.parser.parse_args()
+        user_email = self.args['Email']
+        owner = session['user']
+        res = app_controller.make_request(ride_id, owner, {'Passenger': user_email})
+        if res.get('Status'):
+            status_code = 200
+            return res.get('Message'), status_code
+        else:
+            status_code = 401
+            return res.get('Message'), status_code

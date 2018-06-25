@@ -28,5 +28,6 @@ def create_app(configuration):
     api.add_resource(views.Authenticate, '/api/v1/auth/login')
     api.add_resource(views.RideCreation, '/api/v1/rides')
     api.add_resource(views.RideManipulation, '/api/v1/rides/<ride_id>')
+    api.add_resource(views.Requests, '/api/v1/rides/<ride_id>/requests')
 
     return app

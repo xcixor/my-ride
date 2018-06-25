@@ -62,7 +62,7 @@ class Controller(object):
         time = ride_details.get('Time')
         name = '{}-{}-{}'.format(owner, date, time)
         ride_id = Controller.generate_id(self.ride.rides)
-        ride_details.update({'Name': name, 'Id': ride_id})
+        ride_details.update({'Name': name, 'Id': ride_id, 'Requests': []})
         result = self.user.get_user(owner)
         if result.get('Status'):
             response = self.ride.create_ride(ride_details)
@@ -92,3 +92,11 @@ class Controller(object):
                 return {'Status': False, 'Message': res.get('Message')}
         else:
             return {'Status': False, 'Message': 'User not registered'}
+
+    def make_request(self, ride_id, owner, request_data):
+        """Make a request for a ride."""
+        res = self.ride.make_request(ride_id, owner, request_data)
+        if res.get('Status'):
+            return {'Status': True, 'Message': res.get('Message')}
+        else:
+            return {'Status': False, 'Message': res.get('Message')}
