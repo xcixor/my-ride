@@ -57,3 +57,25 @@ class AppUser(object):
         """
         if len(password) >= 6:
             return True
+
+    def get_user(self, email):
+        """Retrieves a user from the users records.
+
+        Returns user(dict):
+        """
+        if email in self.app_users:
+            return {'Status': True, 'Message': self.app_users.get(email)}
+        else:
+            return {'Status': False, 'Message': 'That user does not exist'}
+
+    def login(self, email, password):
+        """Check if credentials are correct to allow login."""
+        res = self.get_user(email)
+        print('&&&&&&&&&&&&&&&&&&&&&&', res.get('Message'))
+        if res.get('Status'):
+            if password == res.get('Message').get('Password'):
+                return {'Status': True, 'Message': 'Login Successful'}
+            else:
+                return {'Status': False, 'Message': 'Password incorrect!'}
+        else:
+            return {'Status': True, 'Message': 'User does not exist'}

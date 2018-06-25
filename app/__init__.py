@@ -1,7 +1,6 @@
 """Initialize the application."""
 from flask import Flask
 from flask_restful import Api
-from flask_api import FlaskAPI
 from config import config
 from app.api_1_0 import views
 
@@ -26,6 +25,6 @@ def create_app(configuration):
 
     # define routes
     api.add_resource(views.Signup, '/api/v1/auth/register')
-
+    api.add_resource(views.Authenticate, '/api/v1/auth/login')
 
     return app

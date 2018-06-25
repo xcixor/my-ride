@@ -43,29 +43,25 @@ class Controller(object):
                 Controller.generate_id(item_data, item_id)
         return item_id
 
-# if __name__ == '__main__':
-#     controller = Controller()
-#     user_data = {
-#            "Email": "wama@gmail.com",
-#            "Password": "pass123",
-#            "Confirm Password": "pass123"
-#        }
-#     user_data2 = {
-#            "Email": "wami@gmail.com",
-#            "Password": "pass123",
-#            "Confirm Password": "pass123"
-#        }
-#     user_data3 = {
-#         "Email": "wamai@gmail.com",
-#         "Password": "pass123",
-#         "Confirm Password": "pass123"
-#     }
-#     controller.create_user(user_data)
-#     controller.create_user(user_data2)
-#     controller.create_user(user_data3)
-#     # for item in controller.user.app_users:
-#     #     print(item.items())
-#     # for key, value in controller.user.app_users.items():
-#     #     print(value.get('Email'))
-#     print(controller.generate_id(controller.user.app_users))
-#     # print(controller.user.app_users)
+    def login(self, logins):
+        """Login in user with correct credentials."""
+        email = logins.get('Email')
+        password = logins.get('Password')
+        res = self.user.login(email, password)
+        if res.get('Status'):
+            return {'Status': True, 'Message': res.get('Message')}
+        else:
+            return {'Status': False, 'Message': res.get('Message')}
+
+    # def login(self, logins):
+    #     """Check if credentials are correct to allow login."""
+    #     email = logins.get('Email')
+    #     password = logins.get('Password')
+    #     res = self.user.app_users.get('')
+    #     if res.get('Status'):
+    #         if password == res.get('Message').get('Password'):
+    #             return {'Status': True, 'Message': 'Login Successful'}
+    #         else:
+    #             return {'Status': False, 'Message': 'Password incorrect!'}
+    #     else:
+    #         return {'Status': True, 'Message': 'User does not exist'}
