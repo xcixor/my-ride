@@ -25,7 +25,7 @@ class TestRide(unittest.TestCase):
         """Test cannot create the same ride twice."""
         self.ride.create_ride(self.ride_data)
         res = self.ride.create_ride(self.ride_data)
-        self.assertFalse(res)
+        self.assertFalse(res.get('Status'))
 
     def test_view_ride_if_exist_success(self):
         """Test if a ride can be viewed."""
