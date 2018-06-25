@@ -114,6 +114,26 @@ class Ride(object):
     def get_rides(self):
         """Return all rides created."""
         if not bool(self.rides):
-            return {'Status': 'There are no rides at this moment'}
+            return {'Status': False, 'Message': 'There are no rides at this moment'}
         else:
             return {'Status': True, 'Message': self.rides}
+
+    def get_ride_by_id(self, owner, ride_id):
+        """Fetch ride by Id."""
+        user_rides = self.rides.get(owner)
+        if user_rides:
+            for key, value in user_rides.items():
+                if value.get('Id') == int(ride_id):
+                    return {'Status': True, 'Message': value}
+                else:
+                    return {'Status': False, 'Message': 'Ride for that id is inexistent'}
+        else:
+            return {'Status': False, 'Message': 'No rides for this user'}
+
+    def get_ride(self, owner, ride_id):
+        """Fetch a single ride."""
+        res = self.get_ride_by_id(owner, ride_id)
+        if res.get('Status'):
+            return {'Status': True, 'Message': res.get('Message')}
+        else:
+            return {'Status': False, 'Message': res.get('Message')}

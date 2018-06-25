@@ -88,8 +88,6 @@ class RideCreation(Resource):
         """Register params."""
         pass
 
-
-
     @authentication_required
     def post(self):
         """Create ride."""
@@ -128,6 +126,22 @@ class RideCreation(Resource):
     def get(self):
         """Retrieve all events."""
         result = app_controller.get_rides()
+        if result.get('Status'):
+            status_code = 200
+            return result.get('Message'), status_code
+        else:
+            status_code = 404
+            return result.get('Message'), status_code
+
+
+class RideManipulation(Resource):
+    """Performs actions on the ride."""
+
+    @authentication_required
+    def get(self, ride_id):
+        """Fetch a single event."""
+        owner = session['user']
+        result = app_controller.get_ride(owner, ride_id)
         if result.get('Status'):
             status_code = 200
             return result.get('Message'), status_code

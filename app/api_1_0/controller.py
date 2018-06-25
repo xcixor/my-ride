@@ -40,7 +40,7 @@ class Controller(object):
         if item_id == 0:
             item_id = len(item_data) + 1
         for key, value in item_data.items():
-            if value['Id'] == item_id:
+            if value['Id'] == int(item_id):
                 item_id += 1
                 Controller.generate_id(item_data, item_id)
         return item_id
@@ -61,7 +61,8 @@ class Controller(object):
         date = ride_details.get('Date')
         time = ride_details.get('Time')
         name = '{}-{}-{}'.format(owner, date, time)
-        ride_details.update({'Name': name})
+        ride_id = Controller.generate_id(self.ride.rides)
+        ride_details.update({'Name': name, 'Id': ride_id})
         result = self.user.get_user(owner)
         if result.get('Status'):
             response = self.ride.create_ride(ride_details)
@@ -79,3 +80,15 @@ class Controller(object):
             return {'Status': True, 'Message': res.get('Message')}
         else:
             return {'Status': False, 'Message': res.get('Message')}
+
+    def get_ride(self, owner, ride_id):
+        """Fetch a ride."""
+        result = self.user.get_user(owner)
+        if result.get('Status'):
+            res = self.ride.get_ride(owner, ride_id)
+            if res.get('Status'):
+                return {'Status': True, 'Message': res.get('Message')}
+            else:
+                return {'Status': False, 'Message': res.get('Message')}
+        else:
+            return {'Status': False, 'Message': 'User not registered'}
