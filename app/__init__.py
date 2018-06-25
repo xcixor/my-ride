@@ -26,5 +26,6 @@ def create_app(configuration):
     # define routes
     api.add_resource(views.Signup, '/api/v1/auth/register')
     api.add_resource(views.Authenticate, '/api/v1/auth/login')
+    api.add_resource(views.RideCreation, '/api/v1/rides')
 
     return app

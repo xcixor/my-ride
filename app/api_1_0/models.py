@@ -33,7 +33,7 @@ class AppUser(object):
         else:
             user = {email: user_details}
             self.app_users.update(user)
-            return {"Status": True, "Message": "Successfuly Created account"}
+            return {"Status": True, "Message": "{} Your account has bee Successfuly created".format(email)}
 
     @staticmethod
     def verify_email(email):
@@ -71,7 +71,6 @@ class AppUser(object):
     def login(self, email, password):
         """Check if credentials are correct to allow login."""
         res = self.get_user(email)
-        print('&&&&&&&&&&&&&&&&&&&&&&', res.get('Message'))
         if res.get('Status'):
             if password == res.get('Message').get('Password'):
                 return {'Status': True, 'Message': 'Login Successful'}
@@ -79,3 +78,35 @@ class AppUser(object):
                 return {'Status': False, 'Message': 'Password incorrect!'}
         else:
             return {'Status': True, 'Message': 'User does not exist'}
+
+
+class Ride(object):
+    """Handles ride functionality."""
+
+    def __init__(self):
+        """Initialize an instance of the Ride class.
+
+        Args:
+            rides(dict): Contains user records.
+        """
+        self.rides = {}
+
+    def create_ride(self, ride_data):
+        """Create a new ride."""
+        try:
+            owner = ride_data.get('Owner')
+            name = ride_data.get('Name')
+        except KeyError as e:
+            raise Exception("{} is required but is missing".format((e))) from e
+        else:
+            if owner in self.rides:
+                if name in self.rides.get(owner):
+                    return {'Status': False, 'Message': 'That ride already exist'}
+                else:
+                    driver_rides = self.rides.get(owner)
+                    driver_rides.update({name: ride_data})
+                    return {'Status': True, 'Message': 'Your rides have been updated'}
+            else:
+                new_ride = {owner: {name: ride_data}}
+                self.rides.update(new_ride)
+                return {'Status': True, 'Message': '{} Your first ride has been created'.format(owner)}

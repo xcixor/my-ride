@@ -1,5 +1,5 @@
 """Facilitates communication between the views and the models."""
-from app.api_1_0.models import AppUser
+from app.api_1_0.models import AppUser, Ride
 
 
 class Controller(object):
@@ -8,24 +8,26 @@ class Controller(object):
     def __init__(self):
         """Initialize objects."""
         self.user = AppUser()
+        self.ride = Ride()
 
     def create_user(self, user_details):
         """Create a user for the application."""
-        # try:
-        email = user_details.get('Email')
-        user_type = user_details.get('Type')
-        password = user_details.get('Password')
-        confirm_password = user_details.get('Confirm Password')
-        # except KeyError as e:
-        #     raise Exception("{} is required but is missing".format((e))) from e
-        # else:
-        user_id = Controller.generate_id(self.user.app_users)
-        user_data = {'Email': email, 'Password': password, "Type": user_type, 'Confirm Password': confirm_password, 'Id': user_id}
-        result = self.user.create_user(user_data)
-        if result.get('Status'):
-            return {'Status': True, 'Message': result.get('Message')}
+        try:
+            email = user_details.get('Email')
+            user_type = user_details.get('Type')
+            password = user_details.get('Password')
+            confirm_password = user_details.get('Confirm Password')
+        except KeyError as e:
+            raise Exception("{} is required but is missing".format((e))) from e
         else:
-            return {'Status': False, 'Message': result.get('Message')}
+            user_id = Controller.generate_id(self.user.app_users)
+            user_data = {'Email': email, 'Password': password,
+                         "Type": user_type, 'Confirm Password': confirm_password, 'Id': user_id}
+            result = self.user.create_user(user_data)
+            if result.get('Status'):
+                return {'Status': True, 'Message': result.get('Message')}
+            else:
+                return {'Status': False, 'Message': result.get('Message')}
 
     @staticmethod
     def generate_id(item_data, item_id=0):
@@ -52,3 +54,20 @@ class Controller(object):
             return {'Status': True, 'Message': res.get('Message')}
         else:
             return {'Status': False, 'Message': res.get('Message')}
+
+    def create_ride(self, ride_details):
+        """Create ride for logged in user."""
+        owner = ride_details.get('Owner')
+        date = ride_details.get('Date')
+        time = ride_details.get('Time')
+        name = '{}-{}-{}'.format(owner, date, time)
+        ride_details.update({'Name': name})
+        result = self.user.get_user(owner)
+        if result.get('Status'):
+            response = self.ride.create_ride(ride_details)
+            if response.get('Status'):
+                return {'Status': True, 'Message': response.get('Message')}
+            else:
+                return {'Status': False, 'Message': response.get('Message')}
+        else:
+            return {'Status': False, 'Message': 'That user does not exist'}
