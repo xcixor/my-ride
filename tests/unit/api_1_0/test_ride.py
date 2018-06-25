@@ -10,11 +10,16 @@ class TestRide(unittest.TestCase):
     def setUp(self):
         """Initialize objects to be used in tests."""
         self.ride = Ride()
-        self.ride_data = {"Origin": "Thika",
+        self.ride_data = {"Ride Name": "V8",
+                          "Origin": "Thika",
                           "Destination": "Nyeri",
-                          "Departure": "8: 30",
+                          "Time": "12:20",
                           "Name": "voyage to meru",
-                          "Date": "12-7-2018"}
+                          "Date": "14-7-2018",
+                          "Requests": [],
+                          "Owner": "p@g.com",
+                          "Capacity": "12"
+        }
 
     def test_create_ride_with_mandatory_fields_success(self):
         """Test a ride can be created successfuly."""
@@ -36,14 +41,18 @@ class TestRide(unittest.TestCase):
         """Test if all created rides can be shown."""
         self.ride.create_ride(self.ride_data)
         init_rides = len(self.ride.rides)
-        another_ride = {"Origin": "Nairobi",
-                        "Destination": "Nyahururu",
-                        "Departure": "8: 30",
-                        "Name": "mwisho wa reli",
-                        "Date": "12-7-2018"}
+        another_ride = {"Ride Name": "V8",
+                        "Origin": "Thika",
+                        "Destination": "Nyeri",
+                        "Time": "8: 30",
+                        "Date": "12-7-2018",
+                        "Requests": [],
+                        "Owner": "lou@g.com",
+                        "Capacity": "6"}
         self.ride.create_ride(another_ride)
-        new_rides = self.ride.rides
-        self.assertEqual(init_rides, new_rides+1)
+        new_rides = len(self.ride.rides)
+        print('************', self.ride.rides)
+        self.assertEqual(new_rides, init_rides+1)
 
     def test_update_ride_if_exist_success(self):
         """Test if a ride can be updated successfuly."""

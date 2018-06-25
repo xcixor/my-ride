@@ -100,8 +100,8 @@ class TestController(unittest.TestCase):
         result = self.controller.create_ride(self.ride_data)
         self.assertTrue(result.get('Status'))
 
-        resp = self.controller.get_all_rides()
-        self.assertDictContainsSubset(resp.get('Message'), self.ride_data)
+        resp = self.controller.get_rides()
+        self.assertDictContainsSubset(resp.get('Message'), {"p@g.com-12-7-2018-8: 30": self.ride_data})
 
     def test_make_request_if_exists_success(self):
         """Test existing ride can be requested."""
