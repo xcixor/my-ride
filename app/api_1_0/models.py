@@ -147,7 +147,7 @@ class Ride(object):
             return {'Status': True, 'Message': 'Request made successfuly'}
         else:
             return {'Status': False, 'Message': 'That ride does not exist'}
-            
+
     def get_requests(self, owner, ride_id):
         """Get a ride's requests."""
         res = self.get_ride_by_id(owner, ride_id)
@@ -156,3 +156,14 @@ class Ride(object):
             return {'Status': True, 'Message': user_requests}
         else:
             return {'Status': False, 'Message': 'That ride does not exist'}
+
+    def edit_ride(self, ride_id, owner, new_details):
+        """Edit the details of a ride."""
+        result = self.get_ride_by_id(owner, ride_id)
+        if result.get('Status'):
+            ride_to_edit = result.get('Message')
+            for key, value in new_details.items():
+                ride_to_edit[key] = value
+            return {'Status': True, 'Message': ride_to_edit}
+        else:
+            return {'Status': False, 'Message': result.get('Message')}

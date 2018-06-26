@@ -22,6 +22,7 @@ class TestController(unittest.TestCase):
             "Destination": "Nyeri",
             "Time": "8: 30",
             "Name": "voyage to meru",
+            "Id": 1,
             "Date": "12-7-2018",
             "Requests": [],
             "Owner": "p@g.com",
@@ -77,20 +78,9 @@ class TestController(unittest.TestCase):
         self.assertTrue(result.get('Status'))
 
         update_data = {"Vehicle Color": "Red", "Capacity": 7}
-        resp = self.controller.update_ride(
-            "p@g.com", "voyage to meru", update_data)
-        self.assertEqual(resp.get('Message'), "Ride update Successfuly")
-
-    def test_get_user_rides_if_registered_success(self):
-        """Test rides for registed user can be retrieved."""
-        res = self.controller.create_user(self.user_data)
-        self.assertTrue(res.get('Status'))
-
-        result = self.controller.create_ride(self.ride_data)
-        self.assertTrue(result.get('Status'))
-
-        resp = self.controller.get_user_rides("p@g.com")
-        self.assertDictContainsSubset(resp.get('Message'), self.ride_data)
+        resp = self.controller.edit_ride(1,
+            "p@g.com", update_data)
+        self.assertTrue(resp.get('Status'))
 
     def test_get_all_rides_if_exists_success(self):
         """Test all created rides can be retrieved."""
@@ -101,7 +91,9 @@ class TestController(unittest.TestCase):
         self.assertTrue(result.get('Status'))
 
         resp = self.controller.get_rides()
-        self.assertDictContainsSubset(resp.get('Message'), {"p@g.com-12-7-2018-8: 30": self.ride_data})
+        print('******************', resp.get('Message').get('p@g.com'))
+        self.assertDictContainsSubset(self.ride_data, resp.get(
+            'Message').get('p@g.com').get('p@g.com-12-7-2018-8: 30'))
 
     def test_make_request_if_exists_success(self):
         """Test existing ride can be requested."""
@@ -111,12 +103,12 @@ class TestController(unittest.TestCase):
         result = self.controller.create_ride(self.ride_data)
         self.assertTrue(result.get('Status'))
 
-        resp = self.controller.request_ride(
+        resp = self.controller.make_request(1, "p@g.com",
             {"Passenger": "m@y.com",
              "Ride Owner": "james",
              "Ride Name": "mwisho wa reli"})
 
-        self.assertEqual(resp.get('Message'), 'Request succesful')
+        self.assertEqual(resp.get('Message'), 'Request made successfuly')
 
     def retrieve_requests_if_ride_exists_success(self):
         """Test existing ride's requests can be retrieved."""

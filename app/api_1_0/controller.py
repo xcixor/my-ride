@@ -100,3 +100,15 @@ class Controller(object):
             return {'Status': True, 'Message': res.get('Message')}
         else:
             return {'Status': False, 'Message': res.get('Message')}
+
+    def edit_ride(self, ride_id, owner, new_details):
+        """Edit ride for registered user."""
+        res = self.user.get_user(owner)
+        if res.get('Status'):
+            response = self.ride.edit_ride(ride_id, owner, new_details)
+            if response.get('Status'):
+                return {'Status': True, 'Message': response.get('Message')}
+            else:
+                return {'Status': False, 'Message': response.get('Message')}
+        else:
+            return {'Status': False, 'Message': 'User not registered'}

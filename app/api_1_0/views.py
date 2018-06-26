@@ -92,18 +92,12 @@ class RideCreation(Resource):
     def post(self):
         """Create ride."""
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            'Ride Name', type=str, help='Please provide name of your vehicle', required=True)
-        parser.add_argument(
-            'Capacity', type=str, help='Please provide number of people it carries', required=True)
-        parser.add_argument(
-            'Origin', type=str, help='Please the starting point', required=True)
-        parser.add_argument(
-            'Destination', type=str, help='Please provide your destination', required=True)
-        parser.add_argument(
-            'Date', type=str, help='Please provide the date', required=True)
-        parser.add_argument(
-            'Time', type=str, help='Please provide the departure time', required=True)
+        parser.add_argument('Ride Name', type=str, help='Please provide name of your vehicle', required=True)
+        parser.add_argument('Capacity', type=str, help='Please provide number of people it carries', required=True)
+        parser.add_argument('Origin', type=str, help='Please the starting point', required=True)
+        parser.add_argument('Destination', type=str, help='Please provide your destination', required=True)
+        parser.add_argument('Date', type=str, help='Please provide the date', required=True)
+        parser.add_argument('Time', type=str, help='Please provide the departure time', required=True)
         args = parser.parse_args()
         ride_details = {
             "Ride Name": args.get('Ride Name'),
@@ -149,6 +143,44 @@ class RideManipulation(Resource):
             status_code = 404
             return result.get('Message'), status_code
 
+    def put(self, ride_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'Ride Name', type=str, help='Please provide name of your vehicle', required=False)
+        parser.add_argument(
+            'Capacity', type=str, help='Please provide number of people it carries', required=False)
+        parser.add_argument(
+            'Origin', type=str, help='Please the starting point', required=False)
+        parser.add_argument(
+            'Destination', type=str, help='Please provide your destination', required=False)
+        parser.add_argument(
+            'Date', type=str, help='Please provide the date', required=False)
+        parser.add_argument(
+            'Time', type=str, help='Please provide the departure time', required=False)
+        args = parser.parse_args()
+        details = {
+            "Ride Name": args.get('Ride Name'),
+            "Capacity": args.get('Capacity'),
+            "Origin": args.get('Origin'),
+            "Destination": args.get('Destination'),
+            "Date": args.get('Date'),
+            "Time": args.get('Time')
+        }
+        print(details)
+        new_details = {}
+        for key, value in details.items():
+            if details[key]:
+                new_details[key] = value
+        owner = session['user']
+        result = app_controller.edit_ride(ride_id, owner, new_details)
+        if result.get('Status'):
+            status_code = 201
+            return result.get('Message'), status_code
+        else:
+            status_code = 409
+            return
+
+
 class Requests(Resource):
     """Manipulate requests."""
 
@@ -165,5 +197,5 @@ class Requests(Resource):
             status_code = 200
             return res.get('Message'), status_code
         else:
-            status_code = 401
+            status_code = 409
             return res.get('Message'), status_code

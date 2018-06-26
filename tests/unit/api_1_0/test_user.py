@@ -49,17 +49,3 @@ class TestUser(unittest.TestCase):
         self.user.create_user(self.user_data)
         res = self.user.create_user(self.user_data)
         self.assertEqual(res.get('Message'), 'That user already exists')
-
-    def test_update_user_details_success(self):
-        """Test user can update their user details."""
-        self.user.create_user(self.user_data)
-        details = {"Password": "pass123", "National Id": "29811039",
-                   "Alternate Cell": "+2547238484", "Email": "m@g.com"}
-        self.user.update_user('wamai@gmail.com', details)
-        self.assertDictContainsSubset(details, self.user.get_user(1))
-
-    def test_delete_user_if_exist_success(self):
-        """Test delete user successfuly."""
-        self.user.create_user(self.user_data)
-        res = self.user.delete_user('wamai@.com')
-        self.assertTrue(res)
