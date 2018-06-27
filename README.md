@@ -37,7 +37,7 @@ ride-my-way App is a carpooling application that provides drivers with the abili
 Coming up shortly
 
 ## Deployment
-my-ride is hosted at (heroku)[ https://my-ride.herokuapp.com/]
+my-ride is hosted at [heroku]( https://my-ride.herokuapp.com/)
 
 ## Built with
 #### Backend
@@ -54,4 +54,5 @@ None
 * css
 * html
 * js
+
 You can preview the frontend via this [link](https://xcixor.github.io/my-ride)

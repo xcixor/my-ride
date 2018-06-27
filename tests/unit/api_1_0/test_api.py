@@ -3,10 +3,6 @@
 import unittest
 import json
 from app import create_app
-import flask
-from flask import session, request
-import requests
-from unittest.mock import patch
 
 
 class TestApi(unittest.TestCase):
@@ -64,9 +60,8 @@ class TestApi(unittest.TestCase):
         access_token = token.get('access-token')
 
         # create ride
-        res = self.client().post('/api/v1/rides',
-                                data=self.ride,
-                                headers={'Authorization': 'Bearer '+access_token})
+        res = self.client().post('/api/v1/rides', data=self.ride,
+        headers={'Authorization': 'Bearer '+access_token})
         self.assertEqual(res.status_code, 201)
 
     def test_register_user_with_correct_credentials_success(self):
@@ -152,9 +147,8 @@ class TestApi(unittest.TestCase):
         token = json.loads(response.data.decode('UTF-8'))
         access_token = token.get('access-token')
 
-        res = self.client().post('/api/v1/rides',
-                                        data=ride,
-                                        headers={'Authorization': 'Bearer '+access_token})
+        res = self.client().post('/api/v1/rides', data=ride,
+        headers={'Authorization': 'Bearer '+access_token})
         self.assertEqual(res.status_code, 201)
 
     def test_get_all_rides_if_exists_success(self):
@@ -184,8 +178,8 @@ class TestApi(unittest.TestCase):
         access_token = token.get('access-token')
 
         # request ride
-        res = self.client().post('api/v1/rides/1/requests', data=self.request,
-                                 headers={'Authorization': 'Bearer '+access_token})
+        res = self.client().post('api/v1/rides/1/requests',
+        data=self.request, headers={'Authorization': 'Bearer '+access_token})
         self.assertEqual(res.status_code, 200)
 
     def test_logout_success(self):
@@ -208,5 +202,6 @@ class TestApi(unittest.TestCase):
         access_token = token.get('access-token')
 
         # logout
-        res = self.client().post('api/v1/auth/logout', headers={'Authorization': 'Bearer '+access_token})
+        res = self.client().post('api/v1/auth/logout',
+        headers={'Authorization': 'Bearer '+access_token})
         self.assertEqual(res.status_code, 200)

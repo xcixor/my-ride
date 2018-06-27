@@ -139,7 +139,7 @@ class Controller(object):
 
     def edit_ride(self, ride_id, owner, new_details):
         """Edit ride for registered user.
-        
+
         Args:
             ride_id(int): The ride's unique identification
             owner(str): User who created ride
