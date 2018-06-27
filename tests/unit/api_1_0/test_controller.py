@@ -91,7 +91,6 @@ class TestController(unittest.TestCase):
         self.assertTrue(result.get('Status'))
 
         resp = self.controller.get_rides()
-        print('******************', resp.get('Message').get('p@g.com'))
         self.assertDictContainsSubset(self.ride_data, resp.get(
             'Message').get('p@g.com').get('p@g.com-12-7-2018-8: 30'))
 
@@ -109,24 +108,3 @@ class TestController(unittest.TestCase):
              "Ride Name": "mwisho wa reli"})
 
         self.assertEqual(resp.get('Message'), 'Request made successfuly')
-
-    def retrieve_requests_if_ride_exists_success(self):
-        """Test existing ride's requests can be retrieved."""
-        res = self.controller.create_user(self.user_data)
-        self.assertTrue(res.get('Status'))
-
-        result = self.controller.create_ride(self.ride_data)
-        self.assertTrue(result.get('Status'))
-
-        self.controller.request_ride(
-            {"Passenger": "m@y.com",
-             "Ride Owner": "james",
-             "Ride Name": "mwisho wa reli"})
-        init_len = len(self.controller.get_requests('mwisho wa reli', 'james'))
-        self.controller.request_ride(
-            {"Passenger": "koigi@g.com",
-             "Ride Owner": "james",
-             "Ride Name": "mwisho wa reli"})
-
-        new_len = len(self.controller.get_requests('mwisho wa reli', 'james'))
-        self.assertEqual(new_len, init_len+1)
