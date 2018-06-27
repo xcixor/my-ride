@@ -11,13 +11,13 @@ class TestApi(unittest.TestCase):
     def setUp(self):
         """Initialize objects for the tests."""
         self.driver = {
-            "Email": "p@g.com",
+            "Email": "p@gmail.com",
             "Type": "driver",
             "Password": "pass123",
             "Confirm Password": "pass123"
         }
         self.passenger = {
-            "Email": "esta@x.com",
+            "Email": "esta@gmail.com",
             "Type": "passenger",
             "Password": "pass234",
             "Confirm Password": "pass234"
@@ -26,9 +26,10 @@ class TestApi(unittest.TestCase):
             "Destination": "Meru",
             "Origin": "Kutus",
             "Time": "9:00",
-            "Name": "a ride to meru",
+            # "Name": "a ride to meru",
             "Date": "23-6-2018",
-            "Ride Owner": "p@g.com"
+            "Ride Name": "Toyota",
+            "Capacity": "7"
         }
         self.request = {
             "Passenger Name": "Njobu",
@@ -36,21 +37,28 @@ class TestApi(unittest.TestCase):
         }
         self.app = create_app('testing')
         self.client = self.app.test_client
-        self.app.context = self.app.context()
-        self.app.context.push()
+        self.app_context = self.app.app_context()
+        self.app_context.push()
 
     def tearDown(self):
         """Remove objects after test."""
-        self.app.context.pop()
+        self.app_context.pop()
         del self.ride
         del self.passenger
+        del self.driver
         del self.request
 
     def test_register_user_with_correct_credentials_success(self):
         """Test user can register successfuly with correct credentials."""
+        passenger = {
+                "Email": "myi@gmail.com",
+                "Type": "passenger",
+                "Password": "pass234",
+                "Confirm Password": "pass234"
+        }
         response = self.client().post('/api/v1/auth/register',
-                                      data=self.passenger)
-        self.assertEqual(response, 201)
+                                      data=passenger)
+        self.assertEqual(response.status_code, 201)
 
     def test_login_with_correct_authentication_success(self):
         """Test user can login with correct credentials."""
@@ -59,13 +67,13 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response, 201)
         logins = {"Email": "esta@x.com", "Password": "pass234"}
         res = self.client().post('/api/v1/auth/login', data=logins)
-        self.assertTrue(res, 200)
+        self.assertTrue(res.status_code, 200)
 
     def test_login_without_registration_false(self):
         """Test an unregistered user cannot log in."""
         logins = {"email": "esta@x.com", "Password": "pass234"}
         res = self.client().post('/api/v1/auth/login', data=logins)
-        self.assertTrue(res, 403)
+        self.assertTrue(res.status_code, 403)
 
     def test_logout_sucess(self):
         """Test user can logout successfuly."""
@@ -128,20 +136,15 @@ class TestApi(unittest.TestCase):
         # signup
         response = self.client().post('api/v1/auth/register',
                                       data=self.driver)
-        self.assertEqual(response, 201)
+        self.assertEqual(response.status_code, 201)
 
         # login
-        logins = {"Email": "p@g.com", "Password": "pass123"}
+        logins = {"Email": "p@gmail.com", "Password": "pass123"}
         res = self.client().post('api/v1/auth/login', data=logins)
-        self.assertEqual(res, 200)
+        self.assertEqual(res.status_code, 201)
 
-        # get authorization token
-        token = json.loads(res.data.decode('UTF-8'))
-        user_token = token.get('token')
-
-        response = self.client().post('/api/v1/rides', data=self.ride,
-                                      headers={'x-access-token': user_token})
-        self.assertEqual(response, 201)
+        response = self.client().post('/api/v1/rides', data=self.ride)
+        self.assertEqual(response.status_code, 201)
         self.assertIn('Meru', str(response.data))
 
     def test_edit_ride_if_signed_in_success(self):
