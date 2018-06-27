@@ -3,3 +3,8 @@ wireframes/login.png
 wireframes/Screenshot from 2018-06-18 22-44-19.png
 wireframes/Screenshot from 2018-06-20 12-14-42.png
 wireframes
+*.pytest_cache/*
+*pytest_cache/*
+*__pycache__*
+*pytest_cache*
+.vscode/
