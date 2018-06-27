@@ -25,7 +25,8 @@ class AppUser(object):
         if email in self.app_users:
             return {"Status": False, "Message": "That user already exists"}
         elif not AppUser.verify_password_length(password):
-            return {"Status": False, "Message": "Password should not be less than six characters!"}
+            return {"Status": False,
+                    "Message": "Password should not be less than six characters!"}
         elif not AppUser.verify_email(email):
             return {"Status": False, "Message": "Invalid email address!"}
         elif not password == confirm_password:
@@ -33,7 +34,9 @@ class AppUser(object):
         else:
             user = {email: user_details}
             self.app_users.update(user)
-            return {"Status": True, "Message": "{} Your account has bee Successfuly created".format(email)}
+            return {"Status": True,
+                    "Message": "{} Your account has bee \
+                     Successfuly created".format(email)}
 
     @staticmethod
     def verify_email(email):
@@ -59,7 +62,7 @@ class AppUser(object):
             return True
 
     def get_user(self, email):
-        """Retrieves a user from the users records.
+        """Retrieve a user from the users records.
 
         Returns user(dict):
         """
@@ -101,32 +104,43 @@ class Ride(object):
         else:
             if owner in self.rides:
                 if name in self.rides.get(owner):
-                    return {'Status': False, 'Message': 'That ride already exist'}
+                    return {'Status': False,
+                            'Message': 'That ride already exist'}
                 else:
                     driver_rides = self.rides.get(owner)
                     driver_rides.update({name: ride_data})
-                    return {'Status': True, 'Message': 'Your rides have been updated'}
+                    return {'Status': True,
+                            'Message': 'Your rides have been updated'}
             else:
                 new_ride = {owner: {name: ride_data}}
                 self.rides.update(new_ride)
-                return {'Status': True, 'Message': '{} Your first ride has been created'.format(owner)}
+                return {'Status': True,
+                        'Message': '{} Your first ride has been \
+                         created'.format(owner)}
 
     def get_rides(self):
         """Return all rides created."""
         if not bool(self.rides):
-            return {'Status': False, 'Message': 'There are no rides at this moment'}
+            return {'Status': False,
+            'Message': 'There are no rides at this moment'}
         else:
             return {'Status': True, 'Message': self.rides}
 
     def get_ride_by_id(self, owner, ride_id):
-        """Fetch ride by Id."""
+        """Fetch ride by Id.
+        
+        Args:
+            ride_id(int): Unique identifier of the ride
+            owner(str): Name of user who created the ride
+        """
         user_rides = self.rides.get(owner)
         if user_rides:
             for key, value in user_rides.items():
                 if value.get('Id') == int(ride_id):
                     return {'Status': True, 'Message': value}
                 else:
-                    return {'Status': False, 'Message': 'Ride for that id is inexistent'}
+                    return {'Status': False,
+                    'Message': 'Ride for that id is inexistent'}
         else:
             return {'Status': False, 'Message': 'No rides for this user'}
 
@@ -139,7 +153,13 @@ class Ride(object):
             return {'Status': False, 'Message': res.get('Message')}
 
     def make_request(self, ride_id, owner, request_data):
-        """Make a request to join a ride."""
+        """Make a request to join a ride.
+
+        Args:
+            ride_id(int): Unique identifier of the ride
+            owner(str): Name of user who created the ride
+            request_data(dict): request details
+        """
         res = self.get_ride_by_id(owner, ride_id)
         if res.get('Status'):
             user_requests = res.get('Message').get('Requests')
@@ -149,7 +169,12 @@ class Ride(object):
             return {'Status': False, 'Message': 'That ride does not exist'}
 
     def get_requests(self, owner, ride_id):
-        """Get a ride's requests."""
+        """Get a ride's requests.
+
+        Args:
+            ride_id(int): Unique identifier of the ride
+            owner(str): Name of user who created the ride
+        """
         res = self.get_ride_by_id(owner, ride_id)
         if res.get('Status'):
             user_requests = res.get('Message').get('Requests')
@@ -158,7 +183,13 @@ class Ride(object):
             return {'Status': False, 'Message': 'That ride does not exist'}
 
     def edit_ride(self, ride_id, owner, new_details):
-        """Edit the details of a ride."""
+        """Edit the details of a ride.
+
+        Args:
+            ride_id(int): Unique identifier of the ride
+            owner(str): Name of user who created the ride
+            new_details(dict): New details of the ride
+        """
         result = self.get_ride_by_id(owner, ride_id)
         if result.get('Status'):
             ride_to_edit = result.get('Message')

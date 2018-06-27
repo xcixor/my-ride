@@ -3,7 +3,7 @@ from flask import Flask
 from flask_restful import Api
 from config import config
 from app.api_1_0 import views
-from app.api_1_0.views import jwt_manager
+from app.api_1_0.views import JWT_MANAGER
 
 def create_app(configuration):
     """Set up the application.
@@ -21,7 +21,7 @@ def create_app(configuration):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[configuration])
     config[configuration].init_app(app)
-    jwt_manager.init_app(app)
+    JWT_MANAGER.init_app(app)
 
     api = Api(app)
 

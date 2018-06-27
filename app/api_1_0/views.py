@@ -1,25 +1,19 @@
 """Implements the endpoints."""
-from app.api_1_0.controller import Controller
-
-from flask_restful import Resource, reqparse
-
-from flask import session, current_app, request, jsonify
 
 from functools import wraps
 
+from flask_restful import Resource, reqparse
+
 from flask_jwt_extended import JWTManager
 
-from flask import jsonify
+from flask_jwt_extended import create_access_token, jwt_required, get_raw_jwt
 
-from datetime import datetime, timedelta
+from app.api_1_0.controller import Controller
 
-app_controller = Controller()
+APP_CONTROLLER = Controller()
 
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_raw_jwt
+JWT_MANAGER = JWTManager()
 
-jwt_manager = JWTManager()
-
-black_list = {}
 
 class Signup(Resource):
     """Enables the registration of a user."""
@@ -27,13 +21,16 @@ class Signup(Resource):
     def __init__(self):
         """Register the parameters to be passed."""
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('Email', type=str, help='User email is missing', required=True)
-        self.parser.add_argument(
-            'Password', type=str, help='User Password is missing', required=True)
-        self.parser.add_argument(
-            'Confirm Password', type=str, help='Confirm Password is missing', required=True)
-        self.parser.add_argument(
-             'Type', type=str, help='Type of user is missing', required=True)
+        self.parser.add_argument('Email', type=str,
+                                 help='User email is missing', required=True)
+        self.parser.add_argument('Password', type=str,
+                                 help='User Password is missing',
+                                 required=True)
+        self.parser.add_argument('Confirm Password', type=str,
+                                 help='Confirm Password is missing',
+                                 required=True)
+        self.parser.add_argument('Type', type=str,
+                                 help='Type of user is missing', required=True)
         self.args = self.parser.parse_args()
 
     def post(self):
@@ -44,12 +41,11 @@ class Signup(Resource):
             "Type": self.args['Type'],
             "Confirm Password": self.args['Confirm Password']
         }
-        res = app_controller.create_user(user_details)
+        res = APP_CONTROLLER.create_user(user_details)
         if res.get('Status'):
             status_code = 201
             return res.get('Message'), status_code
-        else:
-            return res.get('Message'), 401
+        return res.get('Message'), 401
 
 
 class Authenticate(Resource):
@@ -60,8 +56,9 @@ class Authenticate(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument(
             'Email', type=str, help='Please provide the email', required=True)
-        self.parser.add_argument(
-            'Password', type=str, help='Please provide the password', required=True)
+        self.parser.add_argument('Password', type=str,
+                                 help='Please provide the password',
+                                 required=True)
         self.args = self.parser.parse_args()
 
     def post(self):
@@ -71,46 +68,56 @@ class Authenticate(Resource):
             "Password": self.args['Password']
         }
         user = logins['Email']
-        result = app_controller.login(logins)
+        result = APP_CONTROLLER.login(logins)
         if result.get('Status'):
             try:
                 token = create_access_token(identity=user)
                 status_code = 200
                 return {'Status': True, 'access-token': token}, status_code
-            except:
-                return {'Status': False, 'Message': 'Token could not be creted at this point'}, 500
-        else:
-            return {'Status': False, 'Message': result.get('Message')}
+            except Exception as e:
+                return {'Status': False,
+                        'Message': '{}'.format(e)}, 500
+        return {'Status': False, 'Message': result.get('Message')}
 
 
 class Logout(Resource):
     """Logs a user out of their account."""
+
     @jwt_required
     def post(self):
+        """Black list a user session."""
         token = get_raw_jwt().get('access-token')
         user = get_raw_jwt().get('identity')
         status_code = 200
-        app_controller.black_list_token.update({user:token})
+        APP_CONTROLLER.black_list_token.update({user:token})
         return {'Message': 'Successful logged out'}, status_code
 
 
 class RideCreation(Resource):
     """Handles ride creation."""
 
-    def __init__(self):
-        """Register params."""
-        pass
-
     @jwt_required
     def post(self):
         """Create ride."""
         parser = reqparse.RequestParser()
-        parser.add_argument('Ride Name', type=str, help='Please provide name of your vehicle', required=True)
-        parser.add_argument('Capacity', type=str, help='Please provide number of people it carries', required=True)
-        parser.add_argument('Origin', type=str, help='Please the starting point', required=True)
-        parser.add_argument('Destination', type=str, help='Please provide your destination', required=True)
-        parser.add_argument('Date', type=str, help='Please provide the date', required=True)
-        parser.add_argument('Time', type=str, help='Please provide the departure time', required=True)
+        parser.add_argument('Ride Name', type=str,
+                            help='Please provide name of your vehicle',
+                            required=True)
+        parser.add_argument('Capacity', type=str,
+                            help='Please provide number of people it carries',
+                            required=True)
+        parser.add_argument('Origin', type=str,
+                            help='Please the starting point',
+                            required=True)
+        parser.add_argument('Destination', type=str,
+                            help='Please provide your destination',
+                            required=True)
+        parser.add_argument('Date', type=str,
+                            help='Please provide the date',
+                            required=True)
+        parser.add_argument('Time', type=str,
+                            help='Please provide the departure time',
+                            required=True)
         args = parser.parse_args()
         ride_details = {
             "Ride Name": args.get('Ride Name'),
@@ -122,28 +129,26 @@ class RideCreation(Resource):
         }
         owner = get_raw_jwt().get('identity')
         token = get_raw_jwt().get('access-token')
-        if token not in app_controller.black_list_token.values():
+        if token not in APP_CONTROLLER.black_list_token.values():
             ride_details.update({'Owner': owner})
-            result = app_controller.create_ride(ride_details)
+            result = APP_CONTROLLER.create_ride(ride_details)
             if result.get('Status'):
                 status_code = 201
                 return result.get('Message'), status_code
-            else:
-                status_code = 401
-                return result.get('Message'), status_code
-        else:
-            status_code = 403
-            return {'Status': False, 'Message': 'You have already been logged out login to create rides'}, status_code
+            status_code = 401
+            return result.get('Message'), status_code
+        status_code = 403
+        return {'Status': False,
+                'Message': 'You are logged out'}, status_code
 
     def get(self):
         """Retrieve all events."""
-        result = app_controller.get_rides()
+        result = APP_CONTROLLER.get_rides()
         if result.get('Status'):
             status_code = 200
             return result.get('Message'), status_code
-        else:
-            status_code = 404
-            return result.get('Message'), status_code
+        status_code = 404
+        return result.get('Message'), status_code
 
 
 class RideManipulation(Resource):
@@ -154,33 +159,38 @@ class RideManipulation(Resource):
         """Fetch a single event."""
         owner = get_raw_jwt().get('identity')
         token = get_raw_jwt().get('access-token')
-        if token not in app_controller.black_list_token.values():
-            result = app_controller.get_ride(owner, ride_id)
+        if token not in APP_CONTROLLER.black_list_token.values():
+            result = APP_CONTROLLER.get_ride(owner, ride_id)
             if result.get('Status'):
                 status_code = 200
                 return result.get('Message'), status_code
-            else:
-                status_code = 404
-                return result.get('Message'), status_code
-        else:
-            status_code = 403
-            return {'Status': False, 'Message': 'You have already been logged out login to get your ride'}, status_code
+            status_code = 404
+            return result.get('Message'), status_code
+        status_code = 403
+        return {'Status': False,
+                'Message': 'You are logged out'}, status_code
 
     @jwt_required
     def put(self, ride_id):
+        """Edit ride details."""
         parser = reqparse.RequestParser()
-        parser.add_argument(
-            'Ride Name', type=str, help='Please provide name of your vehicle', required=False)
-        parser.add_argument(
-            'Capacity', type=str, help='Please provide number of people it carries', required=False)
-        parser.add_argument(
-            'Origin', type=str, help='Please the starting point', required=False)
-        parser.add_argument(
-            'Destination', type=str, help='Please provide your destination', required=False)
-        parser.add_argument(
-            'Date', type=str, help='Please provide the date', required=False)
-        parser.add_argument(
-            'Time', type=str, help='Please provide the departure time', required=False)
+        parser.add_argument('Ride Name', type=str,
+                            help='Please provide name of your vehicle',
+                            required=False)
+        parser.add_argument('Capacity', type=str,
+                            help='Please provide number of people it carries',
+                            required=False)
+        parser.add_argument('Origin', type=str,
+                            help='Please the starting point',
+                            required=False)
+        parser.add_argument('Destination', type=str,
+                            help='Please provide your destination',
+                            required=False)
+        parser.add_argument('Date', type=str, help='Please provide the date',
+                            required=False)
+        parser.add_argument('Time', type=str,
+                            help='Please provide the departure time',
+                            required=False)
         args = parser.parse_args()
         details = {
             "Ride Name": args.get('Ride Name'),
@@ -196,24 +206,24 @@ class RideManipulation(Resource):
                 new_details[key] = value
         owner = get_raw_jwt().get('identity')
         token = get_raw_jwt().get('access-token')
-        if token not in app_controller.black_list_token.values():
-            result = app_controller.edit_ride(ride_id, owner, new_details)
+        if token not in APP_CONTROLLER.black_list_token.values():
+            result = APP_CONTROLLER.edit_ride(ride_id, owner, new_details)
             if result.get('Status'):
                 status_code = 201
                 return result.get('Message'), status_code
-            else:
-                status_code = 409
-                return
-        else:
-            status_code = 403
-            return {'Status': False, 'Message': 'You have already been logged out login to edit your ride'}, status_code
+            status_code = 409
+            return
+        status_code = 403
+        return {'Status': False,
+                'Message': 'You have already logged out'}, status_code
 
 
 class RideRequests(Resource):
-    """Performs actions on the ride."""
+    """handles ride request."""
 
     @jwt_required
     def post(self, ride_id):
+        """Create a ride request."""
         parser = reqparse.RequestParser()
         parser.add_argument(
             'Email', type=str, help='Please provide your email', required=True)
@@ -222,10 +232,9 @@ class RideRequests(Resource):
             "Email": args.get('Email')
         }
         owner = get_raw_jwt().get('identity')
-        result = app_controller.make_request(ride_id, owner, details)
+        result = APP_CONTROLLER.make_request(ride_id, owner, details)
         if result.get('Status'):
             status_code = 200
             return result.get('Message'), status_code
-        else:
-            status_code = 409
-            return
+        status_code = 409
+        return
