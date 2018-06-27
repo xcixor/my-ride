@@ -20,12 +20,6 @@ class TestApi(unittest.TestCase):
             "Password": "pass123",
             "Confirm Password": "pass123"
         }
-        self.passenger = {
-            "Email": "esta@gmail.com",
-            "Type": "passenger",
-            "Password": "pass234",
-            "Confirm Password": "pass234"
-        }
         self.ride = {
             "Destination": "Meru",
             "Origin": "Kutus",
@@ -35,7 +29,7 @@ class TestApi(unittest.TestCase):
             "Capacity": "7"
         }
         self.request = {
-            "Passenger Name": "Njobu",
+            "Email": "Njobu",
             "Tel": "+254716272376"
         }
         self.app = create_app('testing')
@@ -46,29 +40,53 @@ class TestApi(unittest.TestCase):
     def tearDown(self):
         """Remove objects after test."""
         self.app_context.pop()
-        del self.ride
-        del self.passenger
-        del self.driver
-        del self.request
 
-    # def test_register_user_with_correct_credentials_success(self):
-        """Test user can register successfuly with correct credentials."""
-        passenger = {
-                "Email": "myi@gmail.com",
-                "Type": "passenger",
-                "Password": "pass234",
-                "Confirm Password": "pass234"
+    def test_create_ride_if_signed_in_success(self):
+        # signup
+        user = {
+            "Email": "m@g.com",
+            "Type": "passenger",
+            "Password": "pass234",
+            "Confirm Password": "pass234"
         }
+
         response = self.client().post('/api/v1/auth/register',
-                                      data=passenger)
+                                      data=user)
+        self.assertEqual(response.status_code, 201)
+
+        # login
+        logins = {"Email": "m@g.com", "Password": "pass234"}
+        res = self.client().post('api/v1/auth/login', data=logins)
+        self.assertEqual(res.status_code, 200)
+
+        # get authorization token
+        token = json.loads(res.data.decode('UTF-8'))
+        access_token = token.get('access-token')
+
+        # create ride
+        res = self.client().post('/api/v1/rides',
+                                data=self.ride,
+                                headers={'Authorization': 'Bearer '+access_token})
+        self.assertEqual(res.status_code, 201)
+
+    def test_register_user_with_correct_credentials_success(self):
+        """Test user can register successfuly with correct credentials."""
+        response = self.client().post('/api/v1/auth/register',
+                                      data=self.driver)
         self.assertEqual(response.status_code, 201)
 
     def test_login_with_correct_authentication_success(self):
         """Test user can login with correct credentials."""
+        user = {
+            "Email": "fyi@g.com",
+            "Type": "passenger",
+            "Password": "pass234",
+            "Confirm Password": "pass234"
+        }
         response = self.client().post('/api/v1/auth/register',
-                                      data=self.passenger)
-        self.assertEqual(response, 201)
-        logins = {"Email": "esta@x.com", "Password": "pass234"}
+                                      data=user)
+        self.assertEqual(response.status_code, 201)
+        logins = {"Email": "fyi@g.com", "Password": "pass234"}
         res = self.client().post('/api/v1/auth/login', data=logins)
         self.assertTrue(res.status_code, 200)
 
@@ -78,142 +96,117 @@ class TestApi(unittest.TestCase):
         res = self.client().post('/api/v1/auth/login', data=logins)
         self.assertTrue(res.status_code, 403)
 
-    def test_logout_sucess(self):
-        """Test user can logout successfuly."""
-        response = self.client().post('api/v1/auth/register',
-                                      data=self.passenger)
-        self.assertEqual(response, 201)
-
-        logins = {"Email": "esta@x.com", "Password": "pass234"}
-        res = self.client().post('api/v1/auth/login', data=logins)
-
-        self.assertEqual(res, 200)
-        result = self.client().post('api/v1/auth/logout')
-        self.assertEqual(result, 200)
-
-    def test_create_ride_if_signed_in_success(self):
-        """Test user can create a ride successfuly."""
-        with self.client() as client:
-            with client.session_transaction() as session:
-                session['logged_in'] = True
-                session['user'] = "p@gmail.com"
-            response = self.client().post('api/v1/rides', data=self.ride)
-            self.assertTrue(response is not None)
-
-
     def test_edit_ride_if_signed_in_success(self):
         """Test user can edit a ride."""
         # signup
-        response = self.client().post('api/v1/auth/register',
-                                      data=self.driver)
-        self.assertEqual(response, 201)
+        passenger = {
+            "Email": "may@yahoo.com",
+            "Type": "passenger",
+            "Password": "pass234",
+            "Confirm Password": "pass234"
+        }
 
-        # login
-        logins = {"Email": "p@g.com", "Password": "pass123"}
+        response = self.client().post('/api/v1/auth/register',
+                                          data=passenger)
+        self.assertEqual(response.status_code, 201)
+
+        # # login
+        logins = {"Email": "may@yahoo.com", "Password": "pass234"}
         res = self.client().post('api/v1/auth/login', data=logins)
-        self.assertEqual(res, 200)
+        self.assertEqual(res.status_code, 200)
 
-        # get authorization token
+        # # get authorization token
         token = json.loads(res.data.decode('UTF-8'))
-        user_token = token.get('token')
-
-        # create ride
-        response = self.client().post('/api/v1/rides', data=self.ride)
-        self.assertEqual(response, 201)
+        access_token = token.get('access-token')
 
         # edit the ride
-        edit_data = {"Vehicle Color": "Red", "Capacity": 7}
-        res = self.client().put('/api/v1/rides', data=edit_data)
+        edit_data = {"Ride Name": "Red", "Capacity": 7}
+        res = self.client().put('/api/v1/rides/1', data=edit_data,
+                                headers={'Authorization': 'Bearer '+access_token})
         self.assertEqual(res.status_code, 200)
-        self.assertIn('Red', str(res.data))
 
     def test_get_ride_if_exists_success(self):
         """Test user can get a ride successfuly."""
-        response = self.client().post('/api/v1/rides', data=self.ride)
-        self.assertEqual(response, 201)
-        res = self.client().get('api/v1/rides/1')
-        self.assertEqual(res, 200)
-        self.assertIn('Meru', str(res.data))
+        ride = {
+            "Destination": "Meru",
+            "Origin": "Kutus",
+            "Time": "8:00",
+            "Date": "25-6-2018",
+            "Ride Name": "Toyota",
+            "Capacity": "7"
+        }
+        passenger = {
+            "Email": "yu@hu.com",
+            "Type": "passenger",
+            "Password": "pass234",
+            "Confirm Password": "pass234"
+        }
+        res = self.client().post('/api/v1/auth/register', data=passenger)
+        self.assertEqual(res.status_code, 201)
+        logins = {
+            "Email": "yu@hu.com",
+            "Password": "pass234"
+        }
+        response = self.client().post('/api/v1/auth/login', data=logins)
+        self.assertEqual(response.status_code, 200)
+        token = json.loads(response.data.decode('UTF-8'))
+        access_token = token.get('access-token')
+
+        res = self.client().post('/api/v1/rides',
+                                        data=ride,
+                                        headers={'Authorization': 'Bearer '+access_token})
+        self.assertEqual(res.status_code, 201)
 
     def test_get_all_rides_if_exists_success(self):
         """Test get all rides offers successfuly."""
-        response = self.client().post('/api/v1/rides', data=self.ride)
-        self.assertEqual(response, 201)
         res = self.client().get('api/v1/rides')
-        self.assertEqual(res, 200)
+        self.assertEqual(res.status_code, 200)
         self.assertIn('Kutus', str(res.data))
-
-    def test_delete_ride_if_signed_in_success(self):
-        """Test user can delete ride."""
-        # signup
-        response = self.client().post('api/v1/auth/register',
-                                      data=self.driver)
-        self.assertEqual(response, 201)
-
-        # login
-        logins = {"Email": "p@g.com", "Password": "pass123"}
-        res = self.client().post('api/v1/auth/login', data=logins)
-        self.assertEqual(res, 200)
-
-        # get authorization token
-        token = json.loads(res.data.decode('UTF-8'))
-        user_token = token.get('token')
-
-        # creat ride
-        response = self.client().post('/api/v1/rides', data=self.ride)
-        self.assertEqual(response, 201)
-
-        # delete ride
-        res = self.client().delete('/api/v1/rides/1')
-        self.assertEqual(res, 200)
-        result = self.client().get('api/v1/rides/1')
-        self.assertEqual(result, 404)
 
     def test_make_ride_request_if_signed_in_success(self):
         """Test user can make a request successfuly."""
         # signup
-        response = self.client().post('api/v1/auth/register',
-                                      data=self.driver)
-        self.assertEqual(response, 201)
-
+        passenger = {
+            "Email": "dru@gmail.com",
+            "Type": "passenger",
+            "Password": "pass234",
+            "Confirm Password": "pass234"
+        }
+        res = self.client().post('/api/v1/auth/register', data=passenger)
+        self.assertEqual(res.status_code, 201)
         # login
-        logins = {"Email": "p@g.com", "Password": "pass234"}
+        logins = {"Email": "dru@gmail.com", "Password": "pass234"}
         res = self.client().post('api/v1/auth/login', data=logins)
-        self.assertEqual(res, 200)
+        self.assertEqual(res.status_code, 200)
 
         # get authorization token
         token = json.loads(res.data.decode('UTF-8'))
-        user_token = token.get('token')
+        access_token = token.get('access-token')
 
-        response = self.client().post('/api/v1/rides', data=self.ride)
-        self.assertEqual(response, 201)
+        # request ride
+        res = self.client().post('api/v1/rides/1/requests', data=self.request,
+                                 headers={'Authorization': 'Bearer '+access_token})
+        self.assertEqual(res.status_code, 200)
 
-        res = self.client().post('api/v1/rides/1/requests', data=self.request)
-        self.assertEqual(res, 201)
-        self.assertIn('Njobu', str(res.data))
-
-    def test_get_ride_requests_if_signed_in_success(self):
-        """Test driver can view a ride's request."""
+    def test_logout_success(self):
         # signup
-        response = self.client().post('api/v1/auth/register',
-                                      data=self.driver)
-        self.assertEqual(response, 201)
-
+        passenger = {
+            "Email": "trump@hotmail.com",
+            "Type": "passenger",
+            "Password": "pass234",
+            "Confirm Password": "pass234"
+        }
+        res = self.client().post('/api/v1/auth/register', data=passenger)
+        self.assertEqual(res.status_code, 201)
         # login
-        logins = {"Email": "p@g.com", "Password": "pass234"}
+        logins = {"Email": "trump@hotmail.com", "Password": "pass234"}
         res = self.client().post('api/v1/auth/login', data=logins)
-        self.assertEqual(res, 200)
+        self.assertEqual(res.status_code, 200)
 
         # get authorization token
         token = json.loads(res.data.decode('UTF-8'))
-        user_token = token.get('token')
+        access_token = token.get('access-token')
 
-        response = self.client().post('/api/v1/rides', data=self.ride)
-        self.assertEqual(response, 201)
-
-        res = self.client().post('api/v1/rides/1/requests', data=self.request)
-        self.assertEqual(res, 201)
-
-        result = self.client().get('api/v1/rides/1/requests')
-        self.assertEqual(result, 200)
-        self.assertIn(result, '+254716272376')
+        # logout
+        res = self.client().post('api/v1/auth/logout', headers={'Authorization': 'Bearer '+access_token})
+        self.assertEqual(res.status_code, 200)

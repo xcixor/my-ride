@@ -9,6 +9,7 @@ class Controller(object):
         """Initialize objects."""
         self.user = AppUser()
         self.ride = Ride()
+        self.black_list_token = {}
 
     def create_user(self, user_details):
         """Create a user for the application."""
@@ -45,15 +46,37 @@ class Controller(object):
                 Controller.generate_id(item_data, item_id)
         return item_id
 
+    @staticmethod
+    def generate_ride_id(item_data, item_name, item_id=0):
+        """Create an id from the list of items provided.
+
+        Args:
+            items(iterable object)obejct from which id is determined.
+            item_id(int): Initial id
+        """
+        if item_id == 0:
+            item_id = len(item_data) + 1
+        for key, value in item_data.items():
+            for key, value in value.items():
+                print('******************************************',value)
+                if value.get('Id') == int(item_id):
+                    item_id += 1
+                    Controller.generate_id(item_data, item_id)
+        return item_id
+
     def login(self, logins):
         """Login in user with correct credentials."""
         email = logins.get('Email')
         password = logins.get('Password')
-        res = self.user.login(email, password)
-        if res.get('Status'):
-            return {'Status': True, 'Message': res.get('Message')}
+        result = self.user.get_user(email)
+        if result.get('Status'):
+            res = self.user.login(email, password)
+            if res.get('Status'):
+                return {'Status': True, 'Message': res.get('Message')}
+            else:
+                return {'Status': False, 'Message': res.get('Message')}
         else:
-            return {'Status': False, 'Message': res.get('Message')}
+            return {'Status': False, 'Message': 'That user does not exist'}
 
     def create_ride(self, ride_details):
         """Create ride for logged in user."""
@@ -61,7 +84,10 @@ class Controller(object):
         date = ride_details.get('Date')
         time = ride_details.get('Time')
         name = '{}-{}-{}'.format(owner, date, time)
-        ride_id = Controller.generate_id(self.ride.rides)
+        if self.ride.rides.get(owner) is None:
+            ride_id = 1
+        else:
+            ride_id = Controller.generate_id(self.ride.rides.get(owner))
         ride_details.update({'Name': name, 'Id': ride_id, 'Requests': []})
         result = self.user.get_user(owner)
         if result.get('Status'):

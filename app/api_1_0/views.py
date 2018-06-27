@@ -3,12 +3,23 @@ from app.api_1_0.controller import Controller
 
 from flask_restful import Resource, reqparse
 
-from flask import session
+from flask import session, current_app, request, jsonify
 
 from functools import wraps
 
+from flask_jwt_extended import JWTManager
+
+from flask import jsonify
+
+from datetime import datetime, timedelta
+
 app_controller = Controller()
 
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_raw_jwt
+
+jwt_manager = JWTManager()
+
+black_list = {}
 
 class Signup(Resource):
     """Enables the registration of a user."""
@@ -41,17 +52,6 @@ class Signup(Resource):
             return res.get('Message'), 401
 
 
-def authentication_required(function):
-    """Check whether user is logged in before proceeding."""
-    @wraps(function)
-    def authenticate(*args, **kwargs):
-        """Check if user has a session."""
-        if not session['logged_in']:
-            return {'Status': False, 'Message': 'You need to be logged in'}, 403
-        return function(*args, **kwargs)
-    return authenticate
-
-
 class Authenticate(Resource):
     """Handles user authentication."""
 
@@ -70,15 +70,28 @@ class Authenticate(Resource):
             "Email": self.args['Email'],
             "Password": self.args['Password']
         }
+        user = logins['Email']
         result = app_controller.login(logins)
         if result.get('Status'):
-            session['user'] = self.args['Email']
-            session['logged_in'] = True
-            status_code = 201
-            return result.get('Message'), status_code
+            try:
+                token = create_access_token(identity=user)
+                status_code = 200
+                return {'Status': True, 'access-token': token}, status_code
+            except:
+                return {'Status': False, 'Message': 'Token could not be creted at this point'}, 500
         else:
-            status_code = 403
-            return result.get('Message'), status_code
+            return {'Status': False, 'Message': result.get('Message')}
+
+
+class Logout(Resource):
+    """Logs a user out of their account."""
+    @jwt_required
+    def post(self):
+        token = get_raw_jwt().get('access-token')
+        user = get_raw_jwt().get('identity')
+        status_code = 200
+        app_controller.black_list_token.update({user:token})
+        return {'Message': 'Successful logged out'}, status_code
 
 
 class RideCreation(Resource):
@@ -88,7 +101,7 @@ class RideCreation(Resource):
         """Register params."""
         pass
 
-    @authentication_required
+    @jwt_required
     def post(self):
         """Create ride."""
         parser = reqparse.RequestParser()
@@ -107,15 +120,20 @@ class RideCreation(Resource):
             "Date": args.get('Date'),
             "Time": args.get('Time')
         }
-        owner = session['user']
-        ride_details.update({'Owner': owner})
-        result = app_controller.create_ride(ride_details)
-        if result.get('Status'):
-            status_code = 201
-            return result.get('Message'), status_code
+        owner = get_raw_jwt().get('identity')
+        token = get_raw_jwt().get('access-token')
+        if token not in app_controller.black_list_token.values():
+            ride_details.update({'Owner': owner})
+            result = app_controller.create_ride(ride_details)
+            if result.get('Status'):
+                status_code = 201
+                return result.get('Message'), status_code
+            else:
+                status_code = 401
+                return result.get('Message'), status_code
         else:
-            status_code = 401
-            return result.get('Message'), status_code
+            status_code = 403
+            return {'Status': False, 'Message': 'You have already been logged out login to create rides'}, status_code
 
     def get(self):
         """Retrieve all events."""
@@ -131,18 +149,24 @@ class RideCreation(Resource):
 class RideManipulation(Resource):
     """Performs actions on the ride."""
 
-    @authentication_required
+    @jwt_required
     def get(self, ride_id):
         """Fetch a single event."""
-        owner = session['user']
-        result = app_controller.get_ride(owner, ride_id)
-        if result.get('Status'):
-            status_code = 200
-            return result.get('Message'), status_code
+        owner = get_raw_jwt().get('identity')
+        token = get_raw_jwt().get('access-token')
+        if token not in app_controller.black_list_token.values():
+            result = app_controller.get_ride(owner, ride_id)
+            if result.get('Status'):
+                status_code = 200
+                return result.get('Message'), status_code
+            else:
+                status_code = 404
+                return result.get('Message'), status_code
         else:
-            status_code = 404
-            return result.get('Message'), status_code
+            status_code = 403
+            return {'Status': False, 'Message': 'You have already been logged out login to get your ride'}, status_code
 
+    @jwt_required
     def put(self, ride_id):
         parser = reqparse.RequestParser()
         parser.add_argument(
@@ -166,36 +190,42 @@ class RideManipulation(Resource):
             "Date": args.get('Date'),
             "Time": args.get('Time')
         }
-        print(details)
         new_details = {}
         for key, value in details.items():
             if details[key]:
                 new_details[key] = value
-        owner = session['user']
-        result = app_controller.edit_ride(ride_id, owner, new_details)
+        owner = get_raw_jwt().get('identity')
+        token = get_raw_jwt().get('access-token')
+        if token not in app_controller.black_list_token.values():
+            result = app_controller.edit_ride(ride_id, owner, new_details)
+            if result.get('Status'):
+                status_code = 201
+                return result.get('Message'), status_code
+            else:
+                status_code = 409
+                return
+        else:
+            status_code = 403
+            return {'Status': False, 'Message': 'You have already been logged out login to edit your ride'}, status_code
+
+
+class RideRequests(Resource):
+    """Performs actions on the ride."""
+
+    @jwt_required
+    def post(self, ride_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'Email', type=str, help='Please provide your email', required=True)
+        args = parser.parse_args()
+        details = {
+            "Email": args.get('Email')
+        }
+        owner = get_raw_jwt().get('identity')
+        result = app_controller.make_request(ride_id, owner, details)
         if result.get('Status'):
-            status_code = 201
+            status_code = 200
             return result.get('Message'), status_code
         else:
             status_code = 409
             return
-
-
-class Requests(Resource):
-    """Manipulate requests."""
-
-    @authentication_required
-    def post(self, ride_id):
-        self.parser = reqparse.RequestParser()
-        self.parser.add_argument(
-            'Email', type=str, help='Please provide your email', required=True)
-        self.args = self.parser.parse_args()
-        user_email = self.args['Email']
-        owner = session['user']
-        res = app_controller.make_request(ride_id, owner, {'Passenger': user_email})
-        if res.get('Status'):
-            status_code = 200
-            return res.get('Message'), status_code
-        else:
-            status_code = 409
-            return res.get('Message'), status_code

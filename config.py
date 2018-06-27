@@ -8,6 +8,8 @@ class Config:
 
     debug = False
     SECRET_KEY = os.urandom(30)
+    SECRET_KEY = "A very secretive key"
+
 
     @staticmethod
     def init_app(app):
