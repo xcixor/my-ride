@@ -35,8 +35,7 @@ class AppUser(object):
             user = {email: user_details}
             self.app_users.update(user)
             return {"Status": True,
-                    "Message": "{} Your account has bee \
-                     Successfuly created".format(email)}
+                    "Message": "{} Your account has bee Successfuly created".format(email)}
 
     @staticmethod
     def verify_email(email):
@@ -128,7 +127,7 @@ class Ride(object):
 
     def get_ride_by_id(self, owner, ride_id):
         """Fetch ride by Id.
-        
+
         Args:
             ride_id(int): Unique identifier of the ride
             owner(str): Name of user who created the ride
