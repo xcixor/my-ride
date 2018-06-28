@@ -1,5 +1,7 @@
 ---
 exclude_paths:
   - '*.html'
+
   - '*.js'
+
   - '*.css'
