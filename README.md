@@ -17,7 +17,7 @@ ride-my-way App is a carpooling application that provides drivers with the abili
 * Type git clone 'the url you copied above' and press enter to download
 * Set up a virtual env and install the dependencies in requirements.txt
 * Checkout to the branch 158619400-edit-ride
-* run the run.py file to start the server
+* Run the run.py file to start the server
 * Make the following requests using postman
 ### endpoints
 |Resource urls                                    | Method     | Description               | Requires token  |
@@ -28,7 +28,7 @@ ride-my-way App is a carpooling application that provides drivers with the abili
 | /api/v1/ride/&lt;ride_id&gt;                    |   PUT      | Update ride details       |    TRUE         |
 | /api/v1/rides                                   |   GET      | Retrieve rides            |    FALSE        |
 | /api/v1/rides/&lt;ride_id&gt;                   |   GET      | Retrieve a ride           |    TRUE         |
-| /api/v1/ride/&lt;business_id&gt;/requesta       |   POST     | Request a ride            |    TRUE         |
+| /api/v1/ride/&lt;business_id&gt;/requests       |   POST     | Request a ride            |    TRUE         |
 
 * From there build on this app
 
