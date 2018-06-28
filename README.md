@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1ee6c2192b744e3bba79837f8ac7c5cd)](https://app.codacy.com/app/xcixor/my-ride?utm_source=github.com&utm_medium=referral&utm_content=xcixor/my-ride&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/xcixor/my-ride.svg?branch=master)](https://travis-ci.org/xcixor/my-ride)
 [![Coverage Status](https://coveralls.io/repos/github/xcixor/my-ride/badge.svg?branch=master)](https://coveralls.io/github/xcixor/my-ride?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/80451ea43faa9ca7b80d/maintainability)](https://codeclimate.com/github/xcixor/my-ride/maintainability)
