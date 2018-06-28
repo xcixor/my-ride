@@ -34,8 +34,8 @@ class AppUser(object):
         else:
             user = {email: user_details}
             self.app_users.update(user)
-            return {"Status": True,
-                    "Message": "{} Your account has bee Successfuly created".format(email)}
+            return {"Status": True, "Message":
+                    "{} Your account has bee Successfuly created".format(email)}
 
     @staticmethod
     def verify_email(email):
@@ -121,7 +121,7 @@ class Ride(object):
         """Return all rides created."""
         if not bool(self.rides):
             return {'Status': False,
-            'Message': 'There are no rides at this moment'}
+                    'Message': 'There are no rides at this moment'}
         else:
             return {'Status': True, 'Message': self.rides}
 
@@ -139,7 +139,7 @@ class Ride(object):
                     return {'Status': True, 'Message': value}
                 else:
                     return {'Status': False,
-                    'Message': 'Ride for that id is inexistent'}
+                            'Message': 'Ride for that id is inexistent'}
         else:
             return {'Status': False, 'Message': 'No rides for this user'}
 

@@ -89,7 +89,7 @@ class Logout(Resource):
         token = get_raw_jwt().get('access-token')
         user = get_raw_jwt().get('identity')
         status_code = 200
-        APP_CONTROLLER.black_list_token.update({user:token})
+        APP_CONTROLLER.black_list_token.update({user: token})
         return {'Message': 'Successful logged out'}, status_code
 
 

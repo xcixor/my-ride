@@ -29,9 +29,9 @@ class Controller(object):
             user_data = {
                         'Email': email,
                         'Password': password,
-                         "Type": user_type,
-                         'Confirm Password': confirm_password,
-                         'Id': user_id
+                        'Type': user_type,
+                        'Confirm Password': confirm_password,
+                        'Id': user_id
             }
             result = self.user.create_user(user_data)
             if result.get('Status'):
