@@ -2,6 +2,22 @@
 from app.api_1_0.models import AppUser, Ride
 
 
+def generate_id(item_data, item_id=0):
+    """Create an id from the iterable object provided.
+
+    Args:
+        items(iterable object)obejct from which id is determined.
+        item_id(int): Initial id
+    """
+    if item_id == 0:
+        item_id = len(item_data) + 1
+    for key, value in item_data.items():
+        if value['Id'] == int(item_id):
+            item_id += 1
+            generate_id(item_data, item_id)
+    return item_id
+
+
 class Controller(object):
     """Manipulates the models functionality."""
 
@@ -25,7 +41,7 @@ class Controller(object):
         except KeyError as e:
             raise Exception("{} is required but is missing".format((e))) from e
         else:
-            user_id = Controller.generate_id(self.user.app_users)
+            user_id = generate_id(self.user.app_users)
             user_data = {
                         'Email': email,
                         'Password': password,
@@ -38,22 +54,6 @@ class Controller(object):
                 return {'Status': True, 'Message': result.get('Message')}
             else:
                 return {'Status': False, 'Message': result.get('Message')}
-
-    @staticmethod
-    def generate_id(item_data, item_id=0):
-        """Create an id from the list of items provided.
-
-        Args:
-            items(iterable object)obejct from which id is determined.
-            item_id(int): Initial id
-        """
-        if item_id == 0:
-            item_id = len(item_data) + 1
-        for key, value in item_data.items():
-            if value['Id'] == int(item_id):
-                item_id += 1
-                Controller.generate_id(item_data, item_id)
-        return item_id
 
     def login(self, logins):
         """Login in user with correct credentials.
@@ -86,7 +86,7 @@ class Controller(object):
         if self.ride.rides.get(owner) is None:
             ride_id = 1
         else:
-            ride_id = Controller.generate_id(self.ride.rides.get(owner))
+            ride_id = generate_id(self.ride.rides.get(owner))
         ride_details.update({'Name': name, 'Id': ride_id, 'Requests': []})
         result = self.user.get_user(owner)
         if result.get('Status'):
