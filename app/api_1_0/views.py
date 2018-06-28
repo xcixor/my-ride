@@ -66,6 +66,8 @@ class Authenticate(Resource):
             "Password": self.args['Password']
         }
         user = logins['Email']
+        if user in APP_CONTROLLER.black_list_token:
+            APP_CONTROLLER.black_list_token.pop(user)
         result = APP_CONTROLLER.login(logins)
         if result.get('Status'):
             try:

@@ -34,7 +34,7 @@ ride-my-way App is a carpooling application that provides drivers with the abili
 * From there build on this app
 
 ## Documentation
-Coming up shortly
+You can view the documentation of the api at [apiary](https://myride.docs.apiary.io/#)
 
 ## Deployment
 my-ride is hosted at [heroku]( https://my-ride.herokuapp.com/)
