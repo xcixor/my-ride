@@ -1,14 +1,6 @@
 language: python
 
 python:
-<<<<<<< Updated upstream
- - "3.6.5"
-install:
-- pip install -r requirements.txt
-- pip install coveralls
-script: py.test --cov=app tests/ && coverage report
-after_success: coveralls
-=======
   - "3.6.5"
 
 install:
@@ -19,4 +11,3 @@ script:
 
 after_success:
   - coveralls
->>>>>>> Stashed changes
