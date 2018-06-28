@@ -1,6 +1,6 @@
 import unittest
 
-from app import create_app, DB
+from app import create_app
 
 from app.api_2_0.models import User
 
@@ -22,7 +22,7 @@ class TestUserModel(unittest.TestCase):
 
     def test_password_verification_success(self):
         """Test password length."""
-        self.assertFalse(self.user.check_password_length('pass12'))
+        self.assertFalse(self.user.check_password_length('pass1'))
 
     def test_passwords_match_success(self):
         """Test passwords provided match."""
