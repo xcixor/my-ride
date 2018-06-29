@@ -63,19 +63,16 @@ class Controller(object):
         """
         email = logins.get('Email')
         password = logins.get('Password')
-        result = self.user.get_user(email)
-        if result.get('Status'):
-            res = self.user.login(email, password)
-            if res.get('Status'):
-                return {'Status': True, 'Message': res.get('Message')}
-            else:
-                return {'Status': False, 'Message': res.get('Message')}
+        # result = self.user.get_user(email)
+        # if result.get('Status'):
+        res = self.user.login(email, password)
+        if res.get('Status'):
+            return {'Status': True, 'Message': res.get('Message')}
         else:
-            return {'Status': False, 'Message': 'That user does not exist'}
+            return {'Status': False, 'Message': res.get('Message')}
 
     def create_ride(self, ride_details):
         """Create ride for logged in user.
-
         Args:
             ride_details(dict): Contains a ride's details.
         """
@@ -96,7 +93,7 @@ class Controller(object):
             else:
                 return {'Status': False, 'Message': response.get('Message')}
         else:
-            return {'Status': False, 'Message': 'That user does not exist'}
+            return {'Status': False, 'Message': result.get('Message')}
 
     def get_rides(self):
         """Get all rides from the rides model."""
@@ -150,7 +147,5 @@ class Controller(object):
             response = self.ride.edit_ride(ride_id, owner, new_details)
             if response.get('Status'):
                 return {'Status': True, 'Message': response.get('Message')}
-            else:
-                return {'Status': False, 'Message': response.get('Message')}
-        else:
-            return {'Status': False, 'Message': 'User not registered'}
+            return {'Status': False, 'Message': response.get('Message')}
+        return {'Status': False, 'Message': 'User not registered'}

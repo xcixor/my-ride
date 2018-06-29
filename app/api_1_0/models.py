@@ -1,6 +1,37 @@
 """Contains the classes for modelling the application."""
 import re
 
+from datetime import datetime
+
+
+def is_empty(field):
+    """Check that a value submitted is not whitespace characters."""
+    if not field or not field.strip() or field.isspace():
+        return True
+    return False
+
+
+def is_valid_date(date_str):
+    """Validate date format."""
+    is_valid_date = True
+    try:
+        datetime.strptime(date_str, "%d/%m/%Y")
+    except:
+        is_valid_date = False
+    return is_valid_date
+
+
+def validate_date(data_str):
+    """Validate date not past."""
+    if is_valid_date(data_str):
+        date_to_validate = datetime.strptime(data_str, "%d/%m/%Y")
+        now = datetime.now()
+        if date_to_validate.date() > now.date():
+            return {"Status": True}
+        return {"Status": False, "Message": "{} is in the past".
+                format(data_str)}
+    return {"Status": False, "Message": "Incorrect date format, should be DD/MM/YYYY"}
+
 
 class AppUser(object):
     """Handles user functionality."""
@@ -21,6 +52,9 @@ class AppUser(object):
         """
         email = user_details.get('Email')
         password = user_details.get('Password')
+        if is_empty(email):
+            return {'Status': False,
+                    'Message': 'No value provided please check your input!'}
         confirm_password = user_details.get('Confirm Password')
         if email in self.app_users:
             return {"Status": False, "Message": "That user already exists"}
@@ -68,18 +102,20 @@ class AppUser(object):
         if email in self.app_users:
             return {'Status': True, 'Message': self.app_users.get(email)}
         else:
-            return {'Status': False, 'Message': 'That user does not exist'}
+            return {'Status': False, 'Message': 'That user is not registered'}
 
     def login(self, email, password):
         """Check if credentials are correct to allow login."""
+        if is_empty(email):
+            return {'Status': False, 'Message': 'No value provided please check your input!'}
         res = self.get_user(email)
         if res.get('Status'):
             if password == res.get('Message').get('Password'):
                 return {'Status': True, 'Message': 'Login Successful'}
             else:
-                return {'Status': False, 'Message': 'Password incorrect!'}
+                return {'Status': False, 'Message': 'Invalid password email combination'}
         else:
-            return {'Status': True, 'Message': 'User does not exist'}
+            return {'Status': False, 'Message': res.get('Message')}
 
 
 class Ride(object):
@@ -94,13 +130,25 @@ class Ride(object):
         self.rides = {}
 
     def create_ride(self, ride_data):
-        """Create a new ride."""
+        """Create a new ride.
+
+        Args:
+            ride_data(dict): the ride's data
+        """
         try:
             owner = ride_data.get('Owner')
             name = ride_data.get('Name')
         except KeyError as e:
             raise Exception("{} is required but is missing".format((e))) from e
-        else:
+
+        for key, value in ride_data.items():
+            if type(value) == str:
+                if is_empty(value):
+                    return {'Status': False, 'Message': '{} is empty'.format(key)}
+
+        date_str = ride_data.get('Date')
+        res = validate_date(date_str)
+        if res.get('Status'):
             if owner in self.rides:
                 if name in self.rides.get(owner):
                     return {'Status': False,
@@ -114,8 +162,9 @@ class Ride(object):
                 new_ride = {owner: {name: ride_data}}
                 self.rides.update(new_ride)
                 return {'Status': True,
-                        'Message': '{} Your first ride has been \
-                         created'.format(owner)}
+                        'Message': '{} Your first ride has been created'.
+                        format(owner)}
+        return {"Status": False, "Message": res.get('Message')}
 
     def get_rides(self):
         """Return all rides created."""
@@ -189,11 +238,15 @@ class Ride(object):
             owner(str): Name of user who created the ride
             new_details(dict): New details of the ride
         """
-        result = self.get_ride_by_id(owner, ride_id)
-        if result.get('Status'):
-            ride_to_edit = result.get('Message')
-            for key, value in new_details.items():
-                ride_to_edit[key] = value
-            return {'Status': True, 'Message': ride_to_edit}
-        else:
-            return {'Status': False, 'Message': result.get('Message')}
+        for key, value in new_details.items():
+            if type(value) == str:
+                if is_empty(value):
+                    return {'Status': False, 'Message': '{} is empty'.
+                            format(key)}
+                result = self.get_ride_by_id(owner, ride_id)
+                if result.get('Status'):
+                    ride_to_edit = result.get('Message')
+                    for key, value in new_details.items():
+                        ride_to_edit[key] = value
+                    return {'Status': True, 'Message': ride_to_edit}
+                return {'Status': False, 'Message': result.get('Message')}
