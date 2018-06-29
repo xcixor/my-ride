@@ -15,12 +15,11 @@ class TestRide(unittest.TestCase):
                           "Destination": "Nyeri",
                           "Time": "12:20",
                           "Name": "voyage to meru",
-                          "Date": "14-7-2018",
+                          "Date": "14/08/2018",
                           "Requests": [],
                           "Id": 1,
                           "Owner": "p@g.com",
-                          "Capacity": "12"
-        }
+                          "Capacity": "12"}
 
     def test_create_ride_with_mandatory_fields_success(self):
         """Test a ride can be created successfuly."""
@@ -38,6 +37,21 @@ class TestRide(unittest.TestCase):
         self.ride.create_ride(self.ride_data)
         self.assertDictContainsSubset(self.ride_data, self.ride.get_ride("p@g.com", 1).get('Message'))
 
+    def test_create_ride_with_empty_values_false(self):
+        """Test a ride cannot be created with empty fields."""
+        ride = {"Ride Name": "",
+                "Origin": "",
+                "Destination": "    ",
+                "Time": " ",
+                "Date": "12-7-2018",
+                "Requests": [],
+                "Id": 1,
+                "Owner": "lou@g.com",
+                "Capacity": "6"
+                }
+        res = self.ride.create_ride(ride)
+        self.assertFalse(res.get('Status'))
+
     def test_view_all_rides_if_exist_success(self):
         """Test if all created rides can be shown."""
         self.ride.create_ride(self.ride_data)
@@ -46,7 +60,7 @@ class TestRide(unittest.TestCase):
                         "Origin": "Thika",
                         "Destination": "Nyeri",
                         "Time": "8: 30",
-                        "Date": "12-7-2018",
+                        "Date": "12/7/2018",
                         "Requests": [],
                         "Id": 1,
                         "Owner": "lou@g.com",
@@ -58,9 +72,10 @@ class TestRide(unittest.TestCase):
     def test_update_ride_if_exist_success(self):
         """Test if a ride can be updated successfuly."""
         res = self.ride.create_ride(self.ride_data)
-        self.assertTrue(res)
+        self.assertTrue(res.get('Status'))
         update_data = {"Origin": "Nairobi", "Destination": "Naivasha"}
         result = self.ride.edit_ride(1, "p@g.com", update_data)
+        print(result.get('Message'))
         self.assertDictContainsSubset(
             update_data, self.ride.get_ride("p@g.com", 1).get('Message'))
 
