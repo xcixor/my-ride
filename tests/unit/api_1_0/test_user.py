@@ -49,3 +49,11 @@ class TestUser(unittest.TestCase):
         self.user.create_user(self.user_data)
         res = self.user.create_user(self.user_data)
         self.assertEqual(res.get('Message'), 'That user already exists')
+
+    def test_field_with_empty_spaces_registration_false(self):
+        """Test user cannot register with empty string."""
+        user = {"Email": "       ", "Password": "pass123",
+                "Confirm Password": "pass123"}
+        res = self.user.create_user(user)
+        self.assertEqual(res.get('Message'),
+                         'No value provided please check your input!')
