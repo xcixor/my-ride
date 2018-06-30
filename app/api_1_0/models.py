@@ -175,12 +175,13 @@ class Ride(object):
 
     def get_ride(self, ride_id):
         """Fetch a single ride."""
+        ride = {}
         for key, value in self.rides.items():
             if key == int(ride_id):
                 ride = value
+        if ride:
                 return {'Status': True, 'Message': ride}
-            else:
-                return {'Status': False, 'Message': 'That ride does not exist'}
+        return {'Status': False, 'Message': 'That ride does not exist'}
 
     def make_request(self, ride_id, request_data):
         """Make a request to join a ride.

@@ -4,7 +4,7 @@ from flask_restful import Api
 from config import config
 from app.api_1_0 import views
 from app.api_1_0.views import JWT_MANAGER
-
+from app.api_1_0 import api_v1
 def create_app(configuration):
     """Set up the application.
 
@@ -23,13 +23,6 @@ def create_app(configuration):
     config[configuration].init_app(app)
     JWT_MANAGER.init_app(app)
 
-    api = Api(app)
-
-    # define routes
-    api.add_resource(views.Signup, '/api/v1/auth/register')
-    api.add_resource(views.Authenticate, '/api/v1/auth/login')
-    api.add_resource(views.RideCreation, '/api/v1/rides')
-    api.add_resource(views.RideManipulation, '/api/v1/rides/<ride_id>')
-    api.add_resource(views.RideRequests, '/api/v1/rides/<ride_id>/requests')
-    api.add_resource(views.Logout, '/api/v1/auth/logout')
+    #Register blueprints
+    app.register_blueprint(api_v1, url_prefix='/api/v1')
     return app
