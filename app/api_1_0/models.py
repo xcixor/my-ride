@@ -138,6 +138,7 @@ class Ride(object):
         try:
             owner = ride_data.get('Owner')
             name = ride_data.get('Name')
+            ride_id = ride_data.get('Id')
         except KeyError as e:
             raise Exception("{} is required but is missing".format((e))) from e
 
@@ -149,21 +150,34 @@ class Ride(object):
         date_str = ride_data.get('Date')
         res = validate_date(date_str)
         if res.get('Status'):
-            if owner in self.rides:
-                if name in self.rides.get(owner):
-                    return {'Status': False,
-                            'Message': 'That ride already exist'}
-                else:
-                    driver_rides = self.rides.get(owner)
-                    driver_rides.update({name: ride_data})
-                    return {'Status': True,
-                            'Message': 'Your rides have been updated'}
-            else:
-                new_ride = {owner: {name: ride_data}}
+            if not self.rides:
+                new_ride = {ride_id: ride_data}
                 self.rides.update(new_ride)
                 return {'Status': True,
                         'Message': '{} Your first ride has been created'.
                         format(owner)}
+            for key, value in self.rides.items():
+                if value.get('Name') == name:
+                    return {'Status': False, 'Message': 'That ride already exist'}
+                else:
+                    new_ride = {ride_id: ride_data}
+                    self.rides.update(new_ride)
+                    return {'Status': True, 'Message': 'Your rides have been updated'}
+            # if owner in self.rides:
+                # if name in self.rides.get(owner):
+                #     return {'Status': False,
+                #             'Message': 'That ride already exist'}
+                # else:
+                #     driver_rides = self.rides.get(owner)
+                #     driver_rides.update({name: ride_data})
+                #     return {'Status': True,
+                #             'Message': 'Your rides have been updated'}
+            # else:
+                # new_ride = {ride_id: ride_data}
+                # self.rides.update(new_ride)
+                # return {'Status': True,
+                #         'Message': '{} Your first ride has been created'.
+                #         format(owner)}
         return {"Status": False, "Message": res.get('Message')}
 
     def get_rides(self):
@@ -174,33 +188,34 @@ class Ride(object):
         else:
             return {'Status': True, 'Message': self.rides}
 
-    def get_ride_by_id(self, owner, ride_id):
-        """Fetch ride by Id.
+    # def get_ride_by_id(self, ride_id):
+    #     """Fetch ride by Id.
 
-        Args:
-            ride_id(int): Unique identifier of the ride
-            owner(str): Name of user who created the ride
-        """
-        user_rides = self.rides.get(owner)
-        if user_rides:
-            for key, value in user_rides.items():
-                if value.get('Id') == int(ride_id):
-                    return {'Status': True, 'Message': value}
-                else:
-                    return {'Status': False,
-                            'Message': 'Ride for that id is inexistent'}
-        else:
-            return {'Status': False, 'Message': 'No rides for this user'}
+    #     Args:
+    #         ride_id(int): Unique identifier of the ride
+    #         owner(str): Name of user who created the ride
+    #     """
+    #     ride = self.rides.get(ride_id)
+    #     if ride:
+    #         for key, value in user_rides.items():
+    #             if value.get('Id') == int(ride_id):
+    #                 return {'Status': True, 'Message': value}
+    #             else:
+    #                 return {'Status': False,
+    #                         'Message': 'Ride for that id is inexistent'}
+    #     else:
+    #         return {'Status': False, 'Message': 'No rides for this user'}
 
-    def get_ride(self, owner, ride_id):
+    def get_ride(self, ride_id):
         """Fetch a single ride."""
-        res = self.get_ride_by_id(owner, ride_id)
-        if res.get('Status'):
-            return {'Status': True, 'Message': res.get('Message')}
-        else:
-            return {'Status': False, 'Message': res.get('Message')}
+        for key, value in self.rides.items():
+            if key == int(ride_id):
+                ride = value
+                return {'Status': True, 'Message': ride}
+            else:
+                return {'Status': False, 'Message': 'That ride does not exist'}
 
-    def make_request(self, ride_id, owner, request_data):
+    def make_request(self, ride_id, request_data):
         """Make a request to join a ride.
 
         Args:
@@ -208,7 +223,7 @@ class Ride(object):
             owner(str): Name of user who created the ride
             request_data(dict): request details
         """
-        res = self.get_ride_by_id(owner, ride_id)
+        res = self.get_ride(ride_id)
         if res.get('Status'):
             user_requests = res.get('Message').get('Requests')
             user_requests.append(request_data)

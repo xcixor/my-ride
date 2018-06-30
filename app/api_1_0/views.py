@@ -224,15 +224,13 @@ class RideRequests(Resource):
     @jwt_required
     def post(self, ride_id):
         """Create a ride request."""
-        parser = reqparse.RequestParser()
-        parser.add_argument(
-            'Email', type=str, help='Please provide your email', required=True)
-        args = parser.parse_args()
-        details = {
-            "Email": args.get('Email')
-        }
-        owner = get_raw_jwt().get('identity')
-        result = APP_CONTROLLER.make_request(ride_id, owner, details)
+        # parser = reqparse.RequestParser()
+        # parser.add_argument(
+        #     'Email', type=str, help='Please provide your email', required=True)
+        # args = parser.parse_args()
+        requester = get_raw_jwt().get('identity')
+        details = {"Email": requester}
+        result = APP_CONTROLLER.make_request(ride_id, details)
         if result.get('Status'):
             status_code = 200
             return result.get('Message'), status_code

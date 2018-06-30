@@ -73,6 +73,7 @@ class Controller(object):
 
     def create_ride(self, ride_details):
         """Create ride for logged in user.
+
         Args:
             ride_details(dict): Contains a ride's details.
         """
@@ -80,20 +81,18 @@ class Controller(object):
         date = ride_details.get('Date')
         time = ride_details.get('Time')
         name = '{}-{}-{}'.format(owner, date, time)
-        if self.ride.rides.get(owner) is None:
+        if not self.ride.rides:
             ride_id = 1
         else:
-            ride_id = generate_id(self.ride.rides.get(owner))
+            ride_id = generate_id(self.ride.rides)
         ride_details.update({'Name': name, 'Id': ride_id, 'Requests': []})
         result = self.user.get_user(owner)
         if result.get('Status'):
             response = self.ride.create_ride(ride_details)
             if response.get('Status'):
                 return {'Status': True, 'Message': response.get('Message')}
-            else:
-                return {'Status': False, 'Message': response.get('Message')}
-        else:
-            return {'Status': False, 'Message': result.get('Message')}
+            return {'Status': False, 'Message': response.get('Message')}
+        return {'Status': False, 'Message': result.get('Message')}
 
     def get_rides(self):
         """Get all rides from the rides model."""
@@ -112,7 +111,7 @@ class Controller(object):
         """
         result = self.user.get_user(owner)
         if result.get('Status'):
-            res = self.ride.get_ride(owner, ride_id)
+            res = self.ride.get_ride(ride_id)
             if res.get('Status'):
                 return {'Status': True, 'Message': res.get('Message')}
             else:
@@ -120,7 +119,7 @@ class Controller(object):
         else:
             return {'Status': False, 'Message': 'User not registered'}
 
-    def make_request(self, ride_id, owner, request_data):
+    def make_request(self, ride_id, request_data):
         """Request for a ride.
 
         Args:
@@ -128,7 +127,7 @@ class Controller(object):
             owner(str): User who created ride
             request_data(dict): Details of the request
         """
-        res = self.ride.make_request(ride_id, owner, request_data)
+        res = self.ride.make_request(ride_id, request_data)
         if res.get('Status'):
             return {'Status': True, 'Message': res.get('Message')}
         else:
