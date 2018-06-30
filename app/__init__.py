@@ -5,6 +5,7 @@ from config import config
 from app.api_1_0 import views
 from app.api_1_0.views import JWT_MANAGER
 from app.api_1_0 import api_v1
+
 def create_app(configuration):
     """Set up the application.
 
