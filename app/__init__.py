@@ -21,7 +21,6 @@ def create_app(configuration):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[configuration])
     config[configuration].init_app(app)
-    JWT_MANAGER.init_app(app)
 
     #Register blueprints
     app.register_blueprint(api_v1, url_prefix='/api/v1')

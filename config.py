@@ -21,19 +21,23 @@ class Development(Config):
     """Contains configurations to be used by developer."""
 
     DEBUG = True
+    db_url = os.environ.get('Production_database_url') or "dbname='rides_production' user='rider' \
+        password='pass123' host='localhost' port='5432'"
 
 
 class Testing(Config):
     """Contains configurations for testing."""
 
     TESTING = True
+    db_url = os.environ.get('Test_database_url') or "dbname='rides_test' user='rider' \
+            password='pass123' host='localhost' port='5432'"
+            # postgresql: // user: pass@localhost: 5432/my_db
 
 
 class Production(Config):
     """Contains configurations for production setting."""
 
     DEBUG = False
-
 
 # Registers the configurations
 config = {
