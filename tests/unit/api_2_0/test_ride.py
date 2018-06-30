@@ -6,7 +6,7 @@ import json
 from app import create_app, DB
 
 
-class TestRideModel(unittest.TestCase):
+class TestRideEndpoints(unittest.TestCase):
     """Tests the Ride."""
 
     def setUp(self):
