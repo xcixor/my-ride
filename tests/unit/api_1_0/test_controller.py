@@ -23,7 +23,7 @@ class TestController(unittest.TestCase):
             "Time": "8: 30",
             "Name": "voyage to meru",
             "Id": 1,
-            "Date": "12-7-2018",
+            "Date": "12/7/2018",
             "Requests": [],
             "Owner": "p@g.com",
             "Capacity": "6"
@@ -67,7 +67,7 @@ class TestController(unittest.TestCase):
     def test_create_ride_unregistered_false(self):
         """Test unregistred user is not allowed to create a ride."""
         res = self.controller.create_ride(self.ride_data)
-        self.assertEqual(res.get('Message'), 'That user does not exist')
+        self.assertEqual(res.get('Message'), 'That user is not registered')
 
     def test_update_ride_if_registered_success(self):
         """Test successful ride update for registered user."""
@@ -92,7 +92,7 @@ class TestController(unittest.TestCase):
 
         resp = self.controller.get_rides()
         self.assertDictContainsSubset(self.ride_data, resp.get(
-            'Message').get('p@g.com').get('p@g.com-12-7-2018-8: 30'))
+            'Message').get('p@g.com').get('p@g.com-12/7/2018-8: 30'))
 
     def test_make_request_if_exists_success(self):
         """Test existing ride can be requested."""

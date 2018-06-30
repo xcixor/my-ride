@@ -20,7 +20,7 @@ class TestApi(unittest.TestCase):
             "Destination": "Meru",
             "Origin": "Kutus",
             "Time": "9:00",
-            "Date": "23-6-2018",
+            "Date": "23/7/2018",
             "Ride Name": "Toyota",
             "Capacity": "7"
         }
@@ -125,18 +125,18 @@ class TestApi(unittest.TestCase):
         ride = {
             "Destination": "Meru",
             "Origin": "Kutus",
-            "Time": "8:00",
-            "Date": "25-6-2018",
+            "Time": "9:40",
+            "Date": "25/8/2018",
             "Ride Name": "Toyota",
             "Capacity": "7"
         }
-        passenger = {
+        driver = {
             "Email": "yu@hu.com",
             "Type": "passenger",
             "Password": "pass234",
             "Confirm Password": "pass234"
         }
-        res = self.client().post('/api/v1/auth/register', data=passenger)
+        res = self.client().post('/api/v1/auth/register', data=driver)
         self.assertEqual(res.status_code, 201)
         logins = {
             "Email": "yu@hu.com",
@@ -147,9 +147,12 @@ class TestApi(unittest.TestCase):
         token = json.loads(response.data.decode('UTF-8'))
         access_token = token.get('access-token')
 
-        res = self.client().post('/api/v1/rides', data=ride,
-        headers={'Authorization': 'Bearer '+access_token})
-        self.assertEqual(res.status_code, 201)
+        result = self.client().post('/api/v1/rides', data=ride,
+                                    headers={'Authorization': 'Bearer '+access_token})
+        self.assertEqual(201, result.status_code)
+
+        res = self.client().get('/api/v1/rides/1', headers={'Authorization': 'Bearer '+access_token})
+        self.assertEqual(res.status_code, 200)
 
     def test_get_all_rides_if_exists_success(self):
         """Test get all rides offers successfuly."""
