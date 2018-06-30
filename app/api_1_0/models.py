@@ -163,21 +163,6 @@ class Ride(object):
                     new_ride = {ride_id: ride_data}
                     self.rides.update(new_ride)
                     return {'Status': True, 'Message': 'Your rides have been updated'}
-            # if owner in self.rides:
-                # if name in self.rides.get(owner):
-                #     return {'Status': False,
-                #             'Message': 'That ride already exist'}
-                # else:
-                #     driver_rides = self.rides.get(owner)
-                #     driver_rides.update({name: ride_data})
-                #     return {'Status': True,
-                #             'Message': 'Your rides have been updated'}
-            # else:
-                # new_ride = {ride_id: ride_data}
-                # self.rides.update(new_ride)
-                # return {'Status': True,
-                #         'Message': '{} Your first ride has been created'.
-                #         format(owner)}
         return {"Status": False, "Message": res.get('Message')}
 
     def get_rides(self):
@@ -220,7 +205,7 @@ class Ride(object):
             ride_id(int): Unique identifier of the ride
             owner(str): Name of user who created the ride
         """
-        res = self.get_ride_id(ride_id)
+        res = self.get_ride(ride_id)
         if res.get('Status'):
             user_requests = res.get('Message').get('Requests')
             return {'Status': True, 'Message': user_requests}

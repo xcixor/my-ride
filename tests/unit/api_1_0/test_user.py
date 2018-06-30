@@ -56,4 +56,4 @@ class TestUser(unittest.TestCase):
                 "Confirm Password": "pass123"}
         res = self.user.create_user(user)
         self.assertEqual(res.get('Message'),
-                         'No value provided please check your input!')
+                         'No value provided for Email please check your input!')

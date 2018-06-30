@@ -63,8 +63,6 @@ class Controller(object):
         """
         email = logins.get('Email')
         password = logins.get('Password')
-        # result = self.user.get_user(email)
-        # if result.get('Status'):
         res = self.user.login(email, password)
         if res.get('Status'):
             return {'Status': True, 'Message': res.get('Message')}

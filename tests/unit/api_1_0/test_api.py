@@ -105,7 +105,7 @@ class TestApi(unittest.TestCase):
                                           data=passenger)
         self.assertEqual(response.status_code, 201)
 
-        # # login
+        # login
         logins = {"Email": "may@yahoo.com", "Password": "pass234"}
         res = self.client().post('api/v1/auth/login', data=logins)
         self.assertEqual(res.status_code, 200)
@@ -118,7 +118,7 @@ class TestApi(unittest.TestCase):
         edit_data = {"Ride Name": "Red", "Capacity": 7}
         res = self.client().put('/api/v1/rides/1', data=edit_data,
                                 headers={'Authorization': 'Bearer '+access_token})
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 201)
 
     def test_get_ride_if_exists_success(self):
         """Test user can get a ride successfuly."""

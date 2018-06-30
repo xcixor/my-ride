@@ -35,7 +35,7 @@ class TestRide(unittest.TestCase):
     def test_view_ride_if_exist_success(self):
         """Test if a ride can be viewed."""
         self.ride.create_ride(self.ride_data)
-        self.assertDictContainsSubset(self.ride_data, self.ride.get_ride("p@g.com", 1).get('Message'))
+        self.assertDictContainsSubset(self.ride_data, self.ride.get_ride(1).get('Message'))
 
     def test_create_ride_with_empty_values_false(self):
         """Test a ride cannot be created with empty fields."""
@@ -54,7 +54,8 @@ class TestRide(unittest.TestCase):
 
     def test_view_all_rides_if_exist_success(self):
         """Test if all created rides can be shown."""
-        self.ride.create_ride(self.ride_data)
+        res = self.ride.create_ride(self.ride_data)
+        self.assertTrue(res.get('Message'))
         init_rides = len(self.ride.rides)
         another_ride = {"Ride Name": "V8",
                         "Origin": "Thika",
@@ -62,7 +63,7 @@ class TestRide(unittest.TestCase):
                         "Time": "8: 30",
                         "Date": "12/7/2018",
                         "Requests": [],
-                        "Id": 1,
+                        "Id": 2,
                         "Owner": "lou@g.com",
                         "Capacity": "6"}
         self.ride.create_ride(another_ride)
@@ -77,7 +78,7 @@ class TestRide(unittest.TestCase):
         result = self.ride.edit_ride(1, "p@g.com", update_data)
         print(result.get('Message'))
         self.assertDictContainsSubset(
-            update_data, self.ride.get_ride("p@g.com", 1).get('Message'))
+            update_data, self.ride.get_ride(1).get('Message'))
 
     def test_make_ride_request_with_correct_data_success(self):
         """Test a request can be made successfuly."""
@@ -85,5 +86,5 @@ class TestRide(unittest.TestCase):
         self.assertTrue(res)
         request_data = {"Passenger": "p@g.com", "Ride Owner": "james",
                         "Ride Name": "mwisho wa reli"}
-        self.ride.make_request(1, "p@g.com", request_data)
-        self.assertCountEqual(self.ride.get_ride("p@g.com", 1).get('Message')['Requests'], [request_data])
+        self.ride.make_request(1, request_data)
+        self.assertCountEqual(self.ride.get_ride(1).get('Message')['Requests'], [request_data])
