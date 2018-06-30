@@ -3,8 +3,8 @@ from flask import Flask
 from flask_restful import Api
 from config import config
 from app.api_1_0 import views
-
-
+from app.api_1_0.views import JWT_MANAGER
+from app.api_1_0 import api_v1
 def create_app(configuration):
     """Set up the application.
 
@@ -21,11 +21,8 @@ def create_app(configuration):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[configuration])
     config[configuration].init_app(app)
-    api = Api(app)
+    JWT_MANAGER.init_app(app)
 
-    # define routes
-    api.add_resource(views.Signup, '/api/v1/auth/register')
-    api.add_resource(views.Authenticate, '/api/v1/auth/login')
-    api.add_resource(views.RideCreation, '/api/v1/rides')
-
+    #Register blueprints
+    app.register_blueprint(api_v1, url_prefix='/api/v1')
     return app

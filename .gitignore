@@ -8,3 +8,5 @@ wireframes
 *__pycache__*
 *pytest_cache*
 .vscode/
+.gitignore
+app/specifications.txt

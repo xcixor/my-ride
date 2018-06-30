@@ -1,6 +1,10 @@
-"""Contains code that defines the api_v1 blueprint."""
+
+"""Initializes the api v1 blueprint."""
 from flask import Blueprint
+from flask_restful import Api
 
-api = Blueprint('api', __name__)
+api_v1 = Blueprint('api_v1', __name__)
 
-from app.api_1_0 import views
+api = Api(api_v1)
+
+from . import routes
