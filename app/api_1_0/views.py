@@ -41,9 +41,8 @@ class Signup(Resource):
         }
         res = APP_CONTROLLER.create_user(user_details)
         if res.get('Status'):
-            status_code = 201
-            return res.get('Message'), status_code
-        return res.get('Message'), 401
+            return {'Message': res.get('Message')}, 201
+        return {'Message': res.get('Message')}, 401
 
 
 class Authenticate(Resource):
@@ -72,12 +71,12 @@ class Authenticate(Resource):
         if result.get('Status'):
             try:
                 token = create_access_token(identity=user)
-                status_code = 200
-                return {'Status': True, 'access-token': token}, status_code
+                return {'Message': 'Successfuly logged in',
+                        'access-token': token}, 200
             except Exception as e:
                 return {'Status': False,
                         'Message': '{}'.format(e)}, 500
-        return {'Status': False, 'Message': result.get('Message')}
+        return {'Message': result.get('Message')}, 403
 
 
 class Logout(Resource):
@@ -88,9 +87,8 @@ class Logout(Resource):
         """Black list a user session."""
         token = get_raw_jwt().get('access-token')
         user = get_raw_jwt().get('identity')
-        status_code = 200
         APP_CONTROLLER.black_list_token.update({user: token})
-        return {'Message': 'Successful logged out'}, status_code
+        return {'Message': 'Successful logged out'}, 200
 
 
 class RideCreation(Resource):
@@ -133,22 +131,16 @@ class RideCreation(Resource):
             ride_details.update({'Owner': owner})
             result = APP_CONTROLLER.create_ride(ride_details)
             if result.get('Status'):
-                status_code = 201
-                return result.get('Message'), status_code
-            status_code = 401
-            return result.get('Message'), status_code
-        status_code = 403
-        return {'Status': False,
-                'Message': 'You are logged out'}, status_code
+                return {'Message': result.get('Message')}, 201
+            return {'Message': result.get('Message')}, 401
+        return {'Message': 'You are logged out'}, 403
 
     def get(self):
         """Retrieve all events."""
         result = APP_CONTROLLER.get_rides()
         if result.get('Status'):
-            status_code = 200
-            return result.get('Message'), status_code
-        status_code = 404
-        return result.get('Message'), status_code
+            return {'Message': result.get('Message')}, 200
+        return {'Message': result.get('Message')}, 404
 
 
 class RideManipulation(Resource):
@@ -162,13 +154,9 @@ class RideManipulation(Resource):
         if token not in APP_CONTROLLER.black_list_token.values():
             result = APP_CONTROLLER.get_ride(owner, ride_id)
             if result.get('Status'):
-                status_code = 200
-                return result.get('Message'), status_code
-            status_code = 404
-            return result.get('Message'), status_code
-        status_code = 403
-        return {'Status': False,
-                'Message': 'You are logged out'}, status_code
+                return{'Message': result.get('Message')}, 200
+            return {'Message': result.get('Message')}, 404
+        return {'Message': 'You are logged out'}, 403
 
     @jwt_required
     def put(self, ride_id):
@@ -209,13 +197,9 @@ class RideManipulation(Resource):
         if token not in APP_CONTROLLER.black_list_token.values():
             result = APP_CONTROLLER.edit_ride(ride_id, owner, new_details)
             if result.get('Status'):
-                status_code = 201
-                return result.get('Message'), status_code
-            status_code = 409
-            return
-        status_code = 403
-        return {'Status': False,
-                'Message': 'You have already logged out'}, status_code
+                return {'Message': result.get('Message')}, 201
+            return {'Message': result.get('Message')}, 400
+        return {'Message': 'You have already logged out'}, 403
 
 
 class RideRequests(Resource):
@@ -224,15 +208,9 @@ class RideRequests(Resource):
     @jwt_required
     def post(self, ride_id):
         """Create a ride request."""
-        # parser = reqparse.RequestParser()
-        # parser.add_argument(
-        #     'Email', type=str, help='Please provide your email', required=True)
-        # args = parser.parse_args()
         requester = get_raw_jwt().get('identity')
         details = {"Email": requester}
         result = APP_CONTROLLER.make_request(ride_id, details)
         if result.get('Status'):
-            status_code = 200
-            return result.get('Message'), status_code
-        status_code = 409
-        return
+            return {'Message': result.get('Message')}, 200
+        return {'Message': result.get('Message')}, 400

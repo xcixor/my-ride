@@ -54,7 +54,7 @@ class AppUser(object):
         password = user_details.get('Password')
         if is_empty(email):
             return {'Status': False,
-                    'Message': 'No value provided please check your input!'}
+                    'Message': 'No value provided for Email please check your input!'}
         confirm_password = user_details.get('Confirm Password')
         if email in self.app_users:
             return {"Status": False, "Message": "That user already exists"}
@@ -188,24 +188,6 @@ class Ride(object):
         else:
             return {'Status': True, 'Message': self.rides}
 
-    # def get_ride_by_id(self, ride_id):
-    #     """Fetch ride by Id.
-
-    #     Args:
-    #         ride_id(int): Unique identifier of the ride
-    #         owner(str): Name of user who created the ride
-    #     """
-    #     ride = self.rides.get(ride_id)
-    #     if ride:
-    #         for key, value in user_rides.items():
-    #             if value.get('Id') == int(ride_id):
-    #                 return {'Status': True, 'Message': value}
-    #             else:
-    #                 return {'Status': False,
-    #                         'Message': 'Ride for that id is inexistent'}
-    #     else:
-    #         return {'Status': False, 'Message': 'No rides for this user'}
-
     def get_ride(self, ride_id):
         """Fetch a single ride."""
         for key, value in self.rides.items():
@@ -238,7 +220,7 @@ class Ride(object):
             ride_id(int): Unique identifier of the ride
             owner(str): Name of user who created the ride
         """
-        res = self.get_ride_by_id(owner, ride_id)
+        res = self.get_ride_id(ride_id)
         if res.get('Status'):
             user_requests = res.get('Message').get('Requests')
             return {'Status': True, 'Message': user_requests}
@@ -258,7 +240,7 @@ class Ride(object):
                 if is_empty(value):
                     return {'Status': False, 'Message': '{} is empty'.
                             format(key)}
-                result = self.get_ride_by_id(owner, ride_id)
+                result = self.get_ride(ride_id)
                 if result.get('Status'):
                     ride_to_edit = result.get('Message')
                     for key, value in new_details.items():
