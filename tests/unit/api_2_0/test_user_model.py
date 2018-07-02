@@ -27,7 +27,3 @@ class TestUserModel(unittest.TestCase):
     def test_passwords_match_success(self):
         """Test passwords provided match."""
         self.assertTrue(self.user.confirm_password('pass123', 'pass123'))
-
-    def test_empty_user_fields_false(self):
-        """Test blank user fields not allowed."""
-        self.assertFalse(self.validate_field("    "))

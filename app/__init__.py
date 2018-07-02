@@ -5,6 +5,8 @@ from config import config
 from app.api_1_0 import views
 from app.api_1_0.views import JWT_MANAGER
 from app.api_1_0 import api_v1
+from app.api_2_0 import api_v2
+from app.api_2_0.controller import Controller
 
 def create_app(configuration):
     """Set up the application.
@@ -23,6 +25,14 @@ def create_app(configuration):
     app.config.from_object(config[configuration])
     config[configuration].init_app(app)
 
+    #set up db
+    db = Controller()
+    db_config = config['production'].db
+    db.init_db(db_config)
+    db.create_all()
+
+
     #Register blueprints
-    app.register_blueprint(api_v1, url_prefix='/api/v1')
+    # app.register_blueprint(api_v1, url_prefix='/api/v1')
+    app.register_blueprint(api_v2, url_prefix='/api/v2')
     return app

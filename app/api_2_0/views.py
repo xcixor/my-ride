@@ -1,9 +1,8 @@
 """Api endpoints implementation."""
 from flask_restful import Resource, reqparse
-from app.api_2_0.models import User
+from app.api_2_0.controller import Controller
 
-USER = User()
-
+CONTROLLER = Controller()
 
 class Signup(Resource):
     """Creates a user record."""
@@ -29,8 +28,16 @@ class Signup(Resource):
         password = self.args['Password'],
         user_type = self.args['Type'],
         confirm_password = self.args['Confirm Password']
-
-        resp = USER.create_user(email, password, confirm_password, user_type)
+        driver = False
+        if user_type[0] == 'driver':
+            driver = True
+        user_data = {
+            "Email": email[0],
+            "Password": password[0],
+            "Confirm Password": confirm_password,
+            "Type": driver
+        }
+        resp = CONTROLLER.create_user(user_data)
         if resp.get('Status'):
-            return {'Status': True, 'Message': 'User successfuly created'}
-        return {'Status': True, 'Message': resp.get('Message')}, 201
+            return {'Message': resp.get('Message')}, 201
+        return {'Message': resp.get('Message')}, 400

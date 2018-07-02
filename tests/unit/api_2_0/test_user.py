@@ -5,6 +5,8 @@ import json
 
 from app import create_app
 
+from app.api_2_0.controller import Controller
+
 
 class TestUserEndpoints(unittest.TestCase):
     """Tests the User."""
@@ -14,6 +16,8 @@ class TestUserEndpoints(unittest.TestCase):
         self.client = self.app.test_client
         self.app_context = self.app.app_context()
         self.app_context.push()
+        self.db = Controller()
+        self.db.create_all()
 
         self.driver = {
             "Email": "p@gmail.com",
@@ -25,21 +29,22 @@ class TestUserEndpoints(unittest.TestCase):
     def tearDown(self):
         """Remove app context, remove db session and delete all records."""
         self.app_context.pop()
+        self.db.drop_all()
 
     def test_register_user_with_correct_data_success(self):
         """Test a user can be created successfuly."""
         response = self.client().post('/api/v2/auth/register',
                                       data=self.driver)
         result = json.loads(response.data.decode('UTF-8'))
-        self.assertEqual('User created!', result.get('Message'))
+        self.assertEqual('Succesfuly created user record',
+                         result.get('Message'))
 
     def test_create_duplicate_user_false(self):
         """Test user cannot be registered twice."""
         response = self.client().post('/api/v2/auth/register',
                                       data=self.driver)
         result = json.loads(response.data.decode('UTF-8'))
-        print('****###################', result)
-        self.assertEqual('That user already exists', result)
+        self.assertEqual(result, 'Succesfuly created user record')
 
         response = self.client().post('/api/v2/auth/register',
                                       data=self.driver)
@@ -94,5 +99,5 @@ class TestUserEndpoints(unittest.TestCase):
         resp = json.loads(res.data.decode('UTF-8'))
         self.assertTrue(resp.get('Status'))
 
-    #     access_token = resp.get('load').get('token')
-    #     self.assertIsNotNone(access_token)
+        access_token = resp.get('load').get('token')
+        self.assertIsNotNone(access_token)

@@ -3,7 +3,7 @@ import unittest
 
 import json
 
-from app import create_app, DB
+from app import create_app
 
 
 class TestRideEndpoints(unittest.TestCase):
@@ -15,7 +15,6 @@ class TestRideEndpoints(unittest.TestCase):
         self.client = self.app.test_client
         self.app_context = self.app.app_context()
         self.app_context.push()
-        DB.create_all()
 
         self.driver = {
             "Email": "p@gmail.com",
@@ -38,8 +37,6 @@ class TestRideEndpoints(unittest.TestCase):
     def tearDown(self):
         """Remove app context, remove db session and delete all records."""
         self.app_context.pop()
-        DB.session.remove()
-        DB.drop_all()
 
     def test_create_ride_success(self):
         """Test a ride can be created successfully with the right data."""
