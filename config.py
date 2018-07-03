@@ -29,7 +29,6 @@ class Testing(Config):
 
     TESTING = True
 
-
 class Production(Config):
     """Contains configurations for production setting."""
 

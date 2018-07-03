@@ -65,6 +65,7 @@ class TestController(unittest.TestCase):
     def test_create_all_tables_success(self):
         """Test controller creates all databases."""
         resp = self.controller.create_all()
+        print('***************', resp.get('Message'))
         self.assertTrue(resp.get('Status'))
 
     def test_verify_user_logins_success(self):

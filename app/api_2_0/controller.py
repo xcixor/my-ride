@@ -1,18 +1,19 @@
 """Interface views to the models."""
+from datetime import datetime
 import psycopg2
 
-from app.api_2_0.models import User
-# from models import User
+from app.api_2_0.models import User, Ride
+
 
 
 class Controller(object):
     """Perform db operations."""
 
-    dbname = "rides"
-    user = "rider"
-    password = "pass123"
-    host = "localhost"
-    port = "5432"
+    dbname = ""
+    user = ""
+    password = ""
+    host = ""
+    port = ""
 
     def __init__(self):
         """Initialize the controller.
@@ -21,6 +22,7 @@ class Controller(object):
             db(dict): database connection information
         """
         self.user = User()
+        self.ride = Ride()
 
     @classmethod
     def init_db(cls, db):
@@ -39,9 +41,12 @@ class Controller(object):
         """
         connection = self.create_db_connection()
         res = self.user.create_user_table(connection)
-        if res.get("Status"):
-            return{'Status': True, 'Message': res.get('Message')}
-        return{'Status': False, 'Message': res.get('Message')}
+        resp = self.ride.create_rides_table(connection)
+        if res.get("Status") and resp.get('Status'):
+            return{'Status': True, 'Message': 'All tables created'}
+        return{'Status': False, 'Message':
+                                {'User table error': res.get('Message'),
+                                 'Rides table error': resp.get('Message')}}
 
     def drop_all(self):
         """Delete all tables."""
@@ -101,3 +106,46 @@ class Controller(object):
         if not field or not field.strip() or field.isspace():
             return True
         return False
+
+    def is_valid_date(self, date_str):
+        """Validate date format."""
+        is_valid_date = True
+        try:
+            datetime.strptime(date_str, "%d/%m/%Y")
+        except:
+            is_valid_date = False
+        return is_valid_date
+
+    def validate_date(self, data_str):
+        """Validate date not past."""
+        if self.is_valid_date(data_str):
+            date_to_validate = datetime.strptime(data_str, "%d/%m/%Y")
+            now = datetime.now()
+            if date_to_validate.date() > now.date():
+                return {"Status": True}
+            return {"Status": False, "Message": "{} is in the past".
+                    format(data_str)}
+        return {"Status": False,
+                "Message": "Incorrect date format, should be DD/MM/YYYY"}
+
+    def create_ride(self, ride_data):
+        """Request models to create ride."""
+        connection = self.create_db_connection()
+        for key, value in ride_data.items():
+            if type(value) == str:
+                if self.is_empty(value):
+                    return {'Status': False,
+                            'Message': '{} is empty'.format(key)}
+        departure_date = ride_data.get('Departure Date')
+        owner = ride_data.get('Owner')
+        owner_data = self.user.find_user(connection, owner).get('Message')
+        owner_id = owner_data[0][0]
+        ride_data.update({'Owner Id': owner_id})
+
+        if self.validate_date(departure_date):
+            res = self.ride.create_ride(connection, ride_data)
+            if res.get('Status'):
+                return {'Status': True, 'Message': res.get('Message')}
+            return {'Status': True, 'Message': res.get('Message')}
+        else:
+            return {"Status": False, "Message": "That date is invalid"}

@@ -68,8 +68,7 @@ class User(object):
                         query = "INSERT INTO users (email, user_password, driver) \
                                 VALUES ('{}', '{}', '{}')".\
                                 format(email, password, user_type)
-                        r = cursor.execute(query)
-                        print(r)
+                        cursor.execute(query)
                         conn.commit()
                         conn.close()
                         return {"Status": True, "Message": "Succesfuly created user record"}
@@ -104,6 +103,79 @@ class User(object):
         cursor = conn.cursor()
         try:
             query = "SELECT * FROM users WHERE Email='{}'".format(email)
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            if rows:
+                return {'Status': True, 'Message': rows}
+            return {'Status': False, 'Message': 'User not registered'}
+        except Exception as e:
+            return {'Status': False, 'Message': '{}'.format(e)}
+
+
+class Ride(object):
+    """Handles ride transactions."""
+
+    def create_rides_table(self, connection):
+        """Create the table to store rides."""
+        conn = connection
+        cursor = conn.cursor()
+        try:
+            query = "CREATE TABLE rides (id serial PRIMARY KEY, \
+                                         Destination TEXT, \
+                                         Origin TEXT, \
+                                         Departure_Time TEXT,\
+                                         Departure_Date TEXT, \
+                                         Ride_Name TEXT,\
+                                         Identifier TEXT,\
+                                         No_Plate TEXT, \
+                                         Capacity INT, \
+                                         Owner_Id INTEGER REFERENCES users(id));"
+            print('Error from controler', cursor.execute(query))
+
+            conn.commit()
+            conn.close()
+            return {'Status': True, 'Message': 'Success!'}
+        except Exception as e:
+            return {'Status': False, 'Message': '{}'.format(e)}
+
+    def create_ride(self, connection, ride_data):
+        """Create a ride."""
+        destination = ride_data.get('Destination')
+        origin = ride_data.get('Origin')
+        departure_time = ride_data.get('Departure Time')
+        departure_date = ride_data.get('Departure Date')
+        ride_name = ride_data.get('Ride Name')
+        identifier = ride_data.get('Identifier')
+        no_plate = ride_data.get('No Plate')
+        capacity = ride_data.get('Capacity')
+        owner_id = ride_data.get('Owner Id')
+
+        if self.find_user(connection, identifier).get('Status'):
+            return {'Status': False, 'Message': 'Ride already exists'}
+        try:
+            conn = connection
+            cursor = conn.cursor()
+            query = "INSERT INTO rides (destination, origin, departure_time,\
+                                 departure_date, ride_name, identifier,\
+                                 no_plate, capacity, owner_id)\
+                    VALUES ('{}', '{}', '{}', '{}', '{}', '{}', \
+                            '{}', '{}', '{}')".\
+                    format(destination, origin, departure_time,
+                           departure_date, ride_name, identifier,
+                           no_plate, capacity, owner_id)
+            cursor.execute(query)
+            conn.commit()
+            conn.close()
+            return {"Status": True, "Message": "Succesfuly created ride!"}
+        except Exception as e:
+            return {"Status": False, "Message": '{}'.format(e)}
+
+    def find_user(self, connection, identifier):
+        """Retrieve user from db."""
+        conn = connection
+        cursor = conn.cursor()
+        try:
+            query = "SELECT * FROM rides WHERE Identifier='{}'".format(identifier)
             cursor.execute(query)
             rows = cursor.fetchall()
             if rows:
