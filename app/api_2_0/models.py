@@ -108,6 +108,6 @@ class User(object):
             rows = cursor.fetchall()
             if rows:
                 return {'Status': True, 'Message': rows}
-            return {'Status': False, 'Message': 'User not found'}
+            return {'Status': False, 'Message': 'User not registered'}
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}

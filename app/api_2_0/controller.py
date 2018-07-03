@@ -1,8 +1,8 @@
 """Interface views to the models."""
 import psycopg2
 
-# from app.api_2_0.models import User
-from models import User
+from app.api_2_0.models import User
+# from models import User
 
 
 class Controller(object):
