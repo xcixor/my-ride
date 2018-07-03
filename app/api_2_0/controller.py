@@ -1,17 +1,18 @@
 """Interface views to the models."""
 import psycopg2
 
-from app.api_2_0.models import User
+# from app.api_2_0.models import User
+from models import User
 
 
 class Controller(object):
     """Perform db operations."""
 
-    dbname = ""
-    user = ""
-    password = ""
-    host = ""
-    port = ""
+    dbname = "rides"
+    user = "rider"
+    password = "pass123"
+    host = "localhost"
+    port = "5432"
 
     def __init__(self):
         """Initialize the controller.
@@ -82,6 +83,18 @@ class Controller(object):
         except Exception as e:
             raise e
         return connection
+
+    def verify_user_credentials(self, logins):
+        """Verify user credentials to login."""
+        email = logins.get('Email')
+        password = logins.get('Password')
+        connection = self.create_db_connection()
+        res = self.user.find_user(connection, email)
+        if res.get('Status'):
+            if password == res.get('Message')[0][2]:
+                return {'Status': True, "Message": 'Valid Credentials'}
+            return {'Status': True, "Message": 'Valid Credentials'}
+        return {'Status': False, 'Message': res.get('Message')}
 
     def is_empty(self, field):
         """Check that a value submitted is not whitespace characters."""
