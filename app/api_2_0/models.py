@@ -6,13 +6,6 @@ from flask_bcrypt import Bcrypt
 BCRYPT = Bcrypt()
 
 
-def is_empty(field):
-    """Check that a value submitted is not whitespace characters."""
-    if not field or not field.strip() or field.isspace():
-        return True
-    return False
-
-
 class User(object):
     """Handles user transactions."""
 
@@ -28,6 +21,13 @@ class User(object):
             query = "CREATE TABLE users (id serial PRIMARY KEY, \
                                          Email VARCHAR, \
                                          User_Password TEXT, \
+                                         FirstName TEXT,\
+                                         LastName TEXT, \
+                                         Gender TEXT,\
+                                         Joined TEXT, \
+                                         Tel TEXT, \
+                                         Ridename TEXT, \
+                                         Ride_Registration TEXT, \
                                          Driver Boolean);"
             cursor.execute(query)
             conn.commit()
@@ -49,12 +49,15 @@ class User(object):
         except Exception as e:
             return {'Status': False, 'Message': e}
 
-    def create_user(self, connection, email, password, confirm_password, user_type):
+    def create_user(self, connection, user_data):
         """Create user record."""
+        email = user_data.get('email')
+        password = user_data.get('password')
+        confirm_password = user_data.get('confirm_password')
+        user_type = user_data.get('user_type')
+
         if self.find_user(connection, email).get('Status'):
             return {'Status': False, 'Message': 'User already exists'}
-        if is_empty(email):
-            return {'Status': False, 'Message': 'Email cannot be blank'}
         conn = connection
         cursor = conn.cursor()
         try:
@@ -65,7 +68,8 @@ class User(object):
                         query = "INSERT INTO users (email, user_password, driver) \
                                 VALUES ('{}', '{}', '{}')".\
                                 format(email, password, user_type)
-                        cursor.execute(query)
+                        r = cursor.execute(query)
+                        print(r)
                         conn.commit()
                         conn.close()
                         return {"Status": True, "Message": "Succesfuly created user record"}

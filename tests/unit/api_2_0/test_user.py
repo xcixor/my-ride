@@ -44,7 +44,8 @@ class TestUserEndpoints(unittest.TestCase):
         response = self.client().post('/api/v2/auth/register',
                                       data=self.driver)
         result = json.loads(response.data.decode('UTF-8'))
-        self.assertEqual(result, 'Succesfuly created user record')
+        self.assertEqual(result.get('Message'), \
+                                    'Succesfuly created user record')
 
         response = self.client().post('/api/v2/auth/register',
                                       data=self.driver)

@@ -40,7 +40,7 @@ class Controller(object):
         res = self.user.create_user_table(connection)
         if res.get("Status"):
             return{'Status': True, 'Message': res.get('Message')}
-        return{'Status': True, 'Message': res.get('Message')}
+        return{'Status': False, 'Message': res.get('Message')}
 
     def drop_all(self):
         """Delete all tables."""
@@ -48,7 +48,7 @@ class Controller(object):
         res = self.user.delete_user_table(connection)
         if res.get('Status'):
             return{'Status': True, 'Message': res.get('Message')}
-        return{'Status': True, 'Message': res.get('Message')}
+        return{'Status': False, 'Message': res.get('Message')}
 
     def create_user(self, user_data):
         """Create a user record."""
@@ -57,8 +57,15 @@ class Controller(object):
         password = user_data.get('Password')
         confirm_password = user_data.get('Confirm Password')
         user_type = user_data.get('Type')
-        res = self.user.create_user(connection, email, password,
-                                   confirm_password, user_type)
+        if self.is_empty(email):
+            return {'Status': False, 'Message': 'Email cannot be blank'}
+        user_details = {
+            "email": email,
+            "password": password,
+            "confirm_password": confirm_password,
+            "user_type": user_type
+        }
+        res = self.user.create_user(connection, user_details)
         if res.get('Status'):
             return {'Status': True, 'Message': res.get('Message')}
         return {'Status': False, 'Message': res.get('Message')}
@@ -75,3 +82,9 @@ class Controller(object):
         except Exception as e:
             raise e
         return connection
+
+    def is_empty(self, field):
+        """Check that a value submitted is not whitespace characters."""
+        if not field or not field.strip() or field.isspace():
+            return True
+        return False
