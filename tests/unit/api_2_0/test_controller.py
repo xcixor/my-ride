@@ -22,21 +22,20 @@ class TestController(unittest.TestCase):
             "Confirm Password": "pass123"
         }
         self.passenger = {
-            "Email": "p@gmail.com",
+            "Email": "pr@gmail.com",
             "Type": False,
             "Password": "pass123",
             "Confirm Password": "pass123"
         }
         self.ride = {
-            "Ride Name": "V8",
-            "Origin": "Thika",
-            "Destination": "Nyeri",
-            "Time": "8: 30",
-            "Name": "voyage to meru",
-            "Date": "12/8/2018",
-            "No Plate": "KCE 323 B",
-            "Owner Id": 1,
-            "Capacity": "6"
+            "Destination": "Meru",
+            "Origin": "Kutus",
+            "Time": "11:00",
+            "Date": "23/9/2018",
+            "Ride Name": "Toyota",
+            "Capacity": 7,
+            "Owner": "p@gmail.com",
+            "No Plate": "KCE"
         }
 
     def tearDown(self):
@@ -65,7 +64,6 @@ class TestController(unittest.TestCase):
     def test_create_all_tables_success(self):
         """Test controller creates all databases."""
         resp = self.controller.create_all()
-        print('***************', resp.get('Message'))
         self.assertTrue(resp.get('Status'))
 
     def test_verify_user_logins_success(self):
@@ -88,25 +86,26 @@ class TestController(unittest.TestCase):
             "Confirm Password": "pass123"
         }
         res = self.controller.create_user(user)
-        self.assertEqual(res.get('Message'), 'Email cannot be empty!')
+        self.assertEqual(res.get('Message'), 'Email cannot be blank')
 
     def test_create_ride_with_invalid_date_false(self):
+        """Test cannot create ride with invalid date."""
         res = self.controller.create_user(self.driver)
         self.assertTrue(res.get('Status'))
-        """Test controller can detect invalid date."""
         ride = {
             "Ride Name": "V8",
             "Origin": "Thika",
             "Destination": "Nyeri",
             "Time": "8: 30",
             "Name": "voyage to meru",
-            "Owner Id": 1,
+            "Owner": "p@gmail.com",
             "No Plate": "KCE 323 B",
-            "Date": "102/78/2018",
+            "Date": "102-78/2018",
             "Capacity": "6"
         }
-        res = self.controller.create_ride(ride)
-        self.assertEqual(res.get('Message'), 'Invalid date')
+        resp = self.controller.create_ride(ride)
+        self.assertEqual(resp.get('Message'),
+                         'Incorrect date format, should be DD/MM/YYYY')
 
     def test_create_ride_with_past_date_false(self):
         res = self.controller.create_user(self.driver)
@@ -119,12 +118,13 @@ class TestController(unittest.TestCase):
             "Time": "8: 30",
             "Name": "voyage to meru",
             "No Plate": "KCE 323 B",
-            "Owner Id": 1,
+            "Owner": "p@gmail.com",
             "Date": "12/6/2017",
             "Capacity": "6"
         }
         res = self.controller.create_ride(ride)
-        self.assertEqual(res.get('Message'), 'Date provided is in the past!')
+        self.assertEqual(res.get('Message'),
+                         '12/6/2017 is in the past')
 
     def test_create_ride_success(self):
         """Test ride can be created with accurate data."""
@@ -132,13 +132,16 @@ class TestController(unittest.TestCase):
         self.assertTrue(res.get('Status'))
         res = self.controller.create_ride(self.ride)
         self.assertEqual(res.get('Message'),
-                         'Your ride has been created successfuly')
+                         'Succesfuly created ride!')
 
     def test_driver_request_own_ride_false(self):
         """Test driver cannot request own ride."""
         res = self.controller.create_user(self.driver)
         self.assertTrue(res.get('Message'))
-        resp = self.controller.request_ride({"User Id": 1})
+        res = self.controller.create_ride(self.ride)
+        self.assertEqual(res.get('Message'),
+                         'Succesfuly created ride!')
+        resp = self.controller.request_ride('p@gmail.com', 1)
         self.assertFalse(resp.get('Status'))
 
     def get_all_rides_if_exist_success(self):
@@ -147,15 +150,34 @@ class TestController(unittest.TestCase):
         self.assertTrue(res.get('Status'))
         res = self.controller.create_ride(self.ride)
         self.assertEqual(res.get('Message'),
-                         'Your ride has been created successfuly')
-        resp = self.controller.get_all_rides()
+                         'Succesfuly created ride!')
+        resp = self.controller.get_rides()
+        print(resp)
         self.assertDictContainsSubset(resp.get('Message'), self.ride)
 
     def test_create_ride_for_non_exisiting_user_false(self):
         """Test a ride cannot be created if user not created."""
         res = self.controller.create_ride(self.ride)
-        self.assertEqual(res.get('Message'),
-                         'Your ride has been created successfuly')
+        self.assertFalse(res.get('Status'))
+
+    def test_create_ride_with_empty_fields_false(self):
+        """Test cannot create ride with invalid date."""
+        res = self.controller.create_user(self.driver)
+        self.assertTrue(res.get('Status'))
+        ride = {
+            "Ride Name": "",
+            "Origin": "Thika",
+            "Destination": "Nyeri",
+            "Time": "8: 30",
+            "Name": "voyage to meru",
+            "Owner": "p@gmail.com",
+            "No Plate": "KCE 323 B",
+            "Date": "102-78/2018",
+            "Capacity": "6"
+        }
+        resp = self.controller.create_ride(ride)
+        self.assertEqual(resp.get('Message'),
+                         'Ride Name is empty')
 
     def test_get_ride_success(self):
         """Test existing ride can be displayed."""
@@ -163,9 +185,8 @@ class TestController(unittest.TestCase):
         self.assertTrue(res.get('Status'))
         res = self.controller.create_ride(self.ride)
         self.assertEqual(res.get('Message'),
-                         'Your ride has been created successfuly')
-        resp = self.controller.get_ride_by_id(1)
-        self.assertDictContainsSubset(resp.get('Message'), self.ride)
+                         'Succesfuly created ride!')
+        self.assertTrue(self.controller.get_rides().get('Message'))
 
     def test_make_ride_request_success(self):
         """Test a ride can be requested successfuly."""
@@ -173,11 +194,11 @@ class TestController(unittest.TestCase):
         self.assertTrue(res.get('Status'))
         res = self.controller.create_ride(self.ride)
         self.assertEqual(res.get('Message'),
-                         'Your ride has been created successfuly')
+                         'Succesfuly created ride!')
         res = self.controller.create_user(self.passenger)
         self.assertTrue(res.get('Message'))
-        resp = self.controller.request_ride({"User Id": 1})
-        self.assertTrue(resp.get('Status'))
+        resp = self.controller.request_ride('pr@gmail.com', 1)
+        self.assertEqual(resp.get('Message'), 'Succesfuly made request!')
 
     def test_get_ride_requests_success(self):
         """Test requests for a ride can be displayed."""
@@ -220,57 +241,3 @@ class TestController(unittest.TestCase):
         self.assertTrue(resp.get('Status'))
         res = self.controller.accept_request(1, {"Request Id": 1})
         self.assertTrue(res.get('Status'))
-
-    def test_get_user_profile_success(self):
-        """Test user can get their user profile."""
-        res = self.controller.create_user(self.driver)
-        self.assertTrue(res.get('Status'))
-        resp = self.controller.get_user_profile(1)
-        self.assertDictContainsSubset(resp.get('Message'), \
-                                      {"Email": "p@g.com"})
-
-    def test_edit_profile_success(self):
-        """Test user can edit their profile successfuly."""
-        res = self.controller.create_user(self.driver)
-        self.assertTrue(res.get('Status'))
-        new_details = {
-            "Email": "peter@gmail.com"
-            }
-        result = self.controller.edit_profile('pass123', new_details)
-        self.assertTrue(result.get('Status'))
-
-    def test_edit_ride_success(self):
-        """Test existing ride can be edited successfuly."""
-        res = self.controller.create_user(self.driver)
-        self.assertTrue(res.get('Status'))
-        res = self.controller.create_ride(self.ride)
-        self.assertEqual(res.get('Message'),
-                         'Your ride has been created successfuly')
-        new_data = {
-            "Ride Name": "Mathree",
-            "Origin": "Nyahururu",
-            "Destination": "Ngwaroz"
-        }
-        resp = self.controller.edit_ride(new_data)
-        self.assertDictContainsSubset(self.controller.get_ride_by_id(1),\
-                                      new_data)
-
-    def test_delete_ride_success(self):
-        """Test existing ride can be deleted."""
-        res = self.controller.create_user(self.driver)
-        self.assertTrue(res.get('Status'))
-        res = self.controller.create_ride(self.ride)
-        result = self.controller.delete_ride(1)
-        self.assertTrue(result)
-
-    def test_invalid_date_false(self):
-        """Test valid date is given."""
-        self.assertFalse(self.controller.validate_date('2000/2000/2000'))
-
-    def test_past_date_false(self):
-        """Test ride cannot pass a date in the past."""
-        self.assertFalse(self.controller.validate_date('20/2/2018'))
-
-    def test_empty_ride_fields_false(self):
-        """Test blank ride fields not allowed."""
-        self.assertFalse(self.controller.validate_field("    "))

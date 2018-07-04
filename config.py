@@ -20,8 +20,6 @@ class Development(Config):
     """Contains configurations to be used by developer."""
 
     DEBUG = True
-    db_url = os.environ.get('Production_database_url') or "dbname='rides_production' user='rider' \
-        password='pass123' host='localhost' port='5432'"
     db = {
         "dbname": "rides",
         "user": "rider",

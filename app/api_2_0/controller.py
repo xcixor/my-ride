@@ -40,20 +40,23 @@ class Controller(object):
             db(dict): database connection information
         """
         connection = self.create_db_connection()
+        res = self.user.create_user_table(connection)
+        resp = self.ride.create_rides_table(connection)
         result = self.request.create_requests_table(connection)
-        print(result.get('Message'))
-        # res = self.user.create_user_table(connection)
-        # resp = self.ride.create_rides_table(connection)
-        # if res.get("Status") and resp.get('Status'):
-        #     return{'Status': True, 'Message': 'All tables created'}
-        # return{'Status': False, 'Message':
-        #                         {'User table error': res.get('Message'),
-        #                          'Rides table error': resp.get('Message')}}
+        if res.get("Status") and resp.get('Status') and result.get('Status'):
+            return{'Status': True, 'Message': 'All tables created'}
+        return{'Status': False, 'Message':
+                                {'User table error': res.get('Message'),
+                                 'Rides table error': resp.get('Message')},
+                                 'Request table error': result.get('Message')}
 
     def drop_all(self):
         """Delete all tables."""
         connection = self.create_db_connection()
+        resp = self.request.delete_requests_table(connection)
+        result = self.ride.delete_rides_table(connection)
         res = self.user.delete_user_table(connection)
+        print('ERro from cont', res.get('Message'))
         if res.get('Status'):
             return{'Status': True, 'Message': res.get('Message')}
         return{'Status': False, 'Message': res.get('Message')}
@@ -138,7 +141,6 @@ class Controller(object):
                 if self.is_empty(value):
                     return {'Status': False,
                             'Message': '{} is empty'.format(key)}
-        departure_date = ride_data.get('Departure Date')
         owner = ride_data.get('Owner')
         owner_data = self.user.find_user(connection, owner).get('Message')
         owner_id = owner_data[0][0]
@@ -148,13 +150,14 @@ class Controller(object):
         ride_data.update({'Owner Id': owner_id})
         ride_data.update({'Identifier': identifier})
 
-        if self.validate_date(departure_date):
+        resp = self.validate_date(date)
+        if resp.get('Status'):
+            # print('*************************', self.validate_date(date))
             res = self.ride.create_ride(connection, ride_data)
             if res.get('Status'):
                 return {'Status': True, 'Message': res.get('Message')}
-            return {'Status': True, 'Message': res.get('Message')}
-        else:
-            return {"Status": False, "Message": "That date is invalid"}
+            return {'Status': False, 'Message': res.get('Message')}
+        return {"Status": False, "Message": resp.get('Message')}
 
     def get_rides(self):
         """Fetch rides from the model."""
@@ -179,7 +182,7 @@ class Controller(object):
         owner_id = owner_data[0][0]
         ride_data = self.ride.get_ride_by_id(connection, ride_id).get('Message')
         ride_owner = ride_data[0][9]
-        if user == ride_owner:
+        if owner_id == ride_owner:
             return {'Status': False,
                     "Message": "You cant request your own ride"}
         res = self.request.create_request(connection, {"Passenger Id": owner_id,

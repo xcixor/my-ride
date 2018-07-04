@@ -56,49 +56,26 @@ class TestUserEndpoints(unittest.TestCase):
         """Test Log in successfuly with correct credentials."""
         response = self.client().post('/api/v2/auth/register',
                                       data=self.driver)
-        result = json.loads(response.data.decode('UTF-8'))
-        self.assertDictEqual({'Id': 1, 'Email': 'p@gmail.com',
-                              'Driver': True}, result.get('Message'))
+        self.assertEqual(201, response.status_code)
 
-        logins = {'Email': 'p@g.com', 'Password': 'pass123'}
+        logins = {'Email': 'p@gmail.com', 'Password': 'pass123'}
 
         res = self.client().post('/api/v2/auth/login', data=logins)
-        resp = json.loads(res.data.decode('UTF-8'))
-        self.assertTrue(resp.get('Status'))
-
-    def test_user_logout_successs(self):
-        """Test logged in user can logout successfuly."""
-        response = self.client().post('/api/v2/auth/register',
-                                      data=self.driver)
-        result = json.loads(response.data.decode('UTF-8'))
-        self.assertDictEqual({'Id': 1, 'Email': 'p@gmail.com',
-                              'Type': 'Driver'}, result.get('Message'))
-
-        logins = {'Email': 'p@g.com', 'Password': 'pass123'}
-
-        res = self.client().post('/api/v2/auth/login', data=logins)
-        resp = json.loads(res.data.decode('UTF-8'))
-        self.assertTrue(resp.get('Status'))
-
-        access_token = resp.get('load').get('token')
-        result = self.client().post('/api/v2/auth/logout',
-                                    header= {'Authorization':
-                                    'Bearer' + access_token})
-        self.assertEqual('Logout successful', result.get('Message'))
+        self.assertEqual(200, res.status_code)
 
     def test_generate_token_success(self):
         """Test on login user gets a token."""
         response = self.client().post('/api/v2/auth/register',
                                       data=self.driver)
         result = json.loads(response.data.decode('UTF-8'))
-        self.assertDictEqual({'Id': 1, 'Email': 'p@gmail.com',
-                              'Driver': True}, result.get('Message'))
+        self.assertEqual(result.get('Message'),
+                         'Succesfuly created user record')
 
-        logins = {'Email': 'p@g.com', 'Password': 'pass123'}
+        logins = {'Email': 'p@gmail.com', 'Password': 'pass123'}
 
         res = self.client().post('/api/v2/auth/login', data=logins)
-        resp = json.loads(res.data.decode('UTF-8'))
-        self.assertTrue(resp.get('Status'))
+        self.assertEqual(200, res.status_code)
 
-        access_token = resp.get('load').get('token')
+        resp = json.loads(res.data.decode('UTF-8'))
+        access_token = resp.get('access-token')
         self.assertIsNotNone(access_token)

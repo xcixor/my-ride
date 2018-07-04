@@ -18,7 +18,7 @@ class User(object):
         conn = connection
         cursor = conn.cursor()
         try:
-            query = "CREATE TABLE users (id serial PRIMARY KEY, \
+            query = "CREATE TABLE IF NOT EXISTS users (id serial PRIMARY KEY, \
                                          Email VARCHAR, \
                                          User_Password TEXT, \
                                          FirstName TEXT,\
@@ -116,7 +116,7 @@ class Ride(object):
         conn = connection
         cursor = conn.cursor()
         try:
-            query = "CREATE TABLE rides (id serial PRIMARY KEY, \
+            query = "CREATE TABLE IF NOT EXISTS rides (id serial PRIMARY KEY, \
                                          Destination TEXT, \
                                          Origin TEXT, \
                                          Departure_Time TEXT,\
@@ -161,8 +161,8 @@ class Ride(object):
             cursor.execute(query)
             conn.commit()
             return {"Status": True, "Message": "Succesfuly created ride!"}
-        except Exception as e:
-            return {"Status": False, "Message": '{}'.format(e)}
+        except psycopg2.Error as e:
+            return {'Status': False, 'Message': '{}'.format(e)}
 
     def get_ride(self, connection, identifier):
         """Retrieve ride from db."""
@@ -209,6 +209,18 @@ class Ride(object):
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
 
+    def delete_rides_table(self, connection):
+        """Delete the user table."""
+        conn = connection
+        cursor = conn.cursor()
+        try:
+            query = "DROP TABLE rides;"
+            cursor.execute(query)
+            conn.commit()
+            return {'Status': True, 'Message': 'Success!'}
+        except Exception as e:
+            return {'Status': False, 'Message': e}
+
 
 class Request(object):
     """Handles request transactions."""
@@ -218,7 +230,7 @@ class Request(object):
         conn = connection
         cursor = conn.cursor()
         try:
-            query = "CREATE TABLE requests (\
+            query = "CREATE TABLE IF NOT EXISTS requests (\
                     id serial PRIMARY KEY,\
                     Passenger_id INTEGER REFERENCES users(id),\
                     Ride_Id INTEGER REFERENCES rides(id),\
@@ -231,7 +243,6 @@ class Request(object):
 
     def create_request(self, connection, request_data):
         """Create a request."""
-        # print('*************************', connection)
         passenger_id = request_data.get('Passenger Id')
         ride_id = request_data.get('Ride Id')
         accept_status = False
@@ -239,7 +250,6 @@ class Request(object):
         if res.get('Status'):
             return {'Status': False,
                     'Message': 'You cant request the same ride twice'}
-        print('*************', res)
         try:
             conn = connection
             cursor = conn.cursor()
@@ -266,3 +276,15 @@ class Request(object):
             return {'Status': False, 'Message': 'That request was not found'}
         except psycopg2.Error as e:
             return {'Status': False, 'Message': '{}'.format(e.pgcode)}
+
+    def delete_requests_table(self, connection):
+        """Delete the user table."""
+        conn = connection
+        cursor = conn.cursor()
+        try:
+            query = "DROP TABLE requests;"
+            cursor.execute(query)
+            conn.commit()
+            return {'Status': True, 'Message': 'Success!'}
+        except Exception as e:
+            return {'Status': False, 'Message': e}

@@ -135,14 +135,13 @@ class CreateRide(Resource):
 
 
 class ManipulateRides(Resource):
-
     @jwt_required
     def get(self, ride_id):
         """Get single ride."""
         res = CONTROLLER.get_ride_by_id(ride_id)
         if res.get('Status'):
             return {'Ride: ': res.get('Message')}, 200
-        return {'message': res.get('Message')}
+        return {'message': res.get('Message')}, 401
 
 
 class Requests(Resource):
