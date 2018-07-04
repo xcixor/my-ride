@@ -102,7 +102,7 @@ class CreateRide(Resource):
         parser.add_argument('Date', type=str,
                             help='Please provide the date',
                             required=True)
-        parser.add_argument('Date', type=str,
+        parser.add_argument('Time', type=str,
                             help='Please provide the date',
                             required=True)
         parser.add_argument('No Plate', type=str,
@@ -125,3 +125,10 @@ class CreateRide(Resource):
         if res.get('Status'):
             return {'message': res.get('Message')}, 201
         return {'message': res.get('Message')}, 400
+
+    def get(self):
+        """Fetch all rides."""
+        resp = CONTROLLER.get_rides()
+        if resp.get('Status'):
+            return {'Rides available: ': resp.get('Message')}
+        return {'Message': resp.get('Message')}

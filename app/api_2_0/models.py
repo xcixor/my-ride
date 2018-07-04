@@ -111,7 +111,6 @@ class User(object):
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
 
-
 class Ride(object):
     """Handles ride transactions."""
 
@@ -142,15 +141,15 @@ class Ride(object):
         """Create a ride."""
         destination = ride_data.get('Destination')
         origin = ride_data.get('Origin')
-        departure_time = ride_data.get('Departure Time')
-        departure_date = ride_data.get('Departure Date')
+        departure_time = ride_data.get('Time')
+        departure_date = ride_data.get('Date')
         ride_name = ride_data.get('Ride Name')
         identifier = ride_data.get('Identifier')
         no_plate = ride_data.get('No Plate')
         capacity = ride_data.get('Capacity')
         owner_id = ride_data.get('Owner Id')
 
-        if self.find_user(connection, identifier).get('Status'):
+        if self.get_ride(connection, identifier).get('Status'):
             return {'Status': False, 'Message': 'Ride already exists'}
         try:
             conn = connection
@@ -170,16 +169,32 @@ class Ride(object):
         except Exception as e:
             return {"Status": False, "Message": '{}'.format(e)}
 
-    def find_user(self, connection, identifier):
-        """Retrieve user from db."""
+    def get_ride(self, connection, identifier):
+        """Retrieve ride from db."""
         conn = connection
         cursor = conn.cursor()
         try:
-            query = "SELECT * FROM rides WHERE Identifier='{}'".format(identifier)
+            query = "SELECT * FROM rides WHERE identifier='{}'".\
+                    format(identifier)
             cursor.execute(query)
             rows = cursor.fetchall()
             if rows:
                 return {'Status': True, 'Message': rows}
             return {'Status': False, 'Message': 'User not registered'}
+        except Exception as e:
+            return {'Status': False, 'Message': '{}'.format(e)}
+
+    def get_rides(self, connection):
+        """Retrieve rides from db."""
+        conn = connection
+        cursor = conn.cursor()
+        try:
+            query = "SELECT * FROM rides"
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            if rows:
+                return {'Status': True, 'Message': rows}
+            return {'Status': False, 'Message': 'No rides at this moment, \
+                                                 check again later!'}
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}

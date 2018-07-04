@@ -27,6 +27,12 @@ def create_app(configuration):
 
     JWT_MANAGER.init_app(app)
 
+    # set up db
+    db = Controller()
+    db_config = config[configuration].db
+    db.init_db(db_config)
+    db.create_all()
+
     # Register blueprints
     app.register_blueprint(api_v1, url_prefix='/api/v1')
     app.register_blueprint(api_v2, url_prefix='/api/v2')

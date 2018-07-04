@@ -22,12 +22,26 @@ class Development(Config):
     DEBUG = True
     db_url = os.environ.get('Production_database_url') or "dbname='rides_production' user='rider' \
         password='pass123' host='localhost' port='5432'"
+    db = {
+        "dbname": "rides",
+        "user": "rider",
+        "password": "pass123",
+        "host": "localhost",
+        "port": "5432"
+    }
 
 
 class Testing(Config):
     """Contains configurations for testing."""
 
     TESTING = True
+    db = {
+        "dbname": "rides_test",
+        "user": "rider",
+        "password": "pass123",
+        "host": "localhost",
+        "port": "5432"
+    }
 
 class Production(Config):
     """Contains configurations for production setting."""

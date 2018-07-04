@@ -140,7 +140,11 @@ class Controller(object):
         owner = ride_data.get('Owner')
         owner_data = self.user.find_user(connection, owner).get('Message')
         owner_id = owner_data[0][0]
+        date = ride_data.get('Date')
+        time = ride_data.get('Time')
+        identifier = '{}-{}-{}'.format(owner, date, time)
         ride_data.update({'Owner Id': owner_id})
+        ride_data.update({'Identifier': identifier})
 
         if self.validate_date(departure_date):
             res = self.ride.create_ride(connection, ride_data)
@@ -149,3 +153,11 @@ class Controller(object):
             return {'Status': True, 'Message': res.get('Message')}
         else:
             return {"Status": False, "Message": "That date is invalid"}
+
+    def get_rides(self):
+        """Fetch rides from the model."""
+        connection = self.create_db_connection()
+        res = self.ride.get_rides(connection)
+        if res.get('Status'):
+            return {'Status': True, 'Message': res.get('Message')}
+        return {'Status': False, 'Message': res.get('Message')}
