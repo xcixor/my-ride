@@ -2,8 +2,7 @@
 from datetime import datetime
 import psycopg2
 
-from app.api_2_0.models import User, Ride
-
+from app.api_2_0.models import User, Ride, Request
 
 
 class Controller(object):
@@ -23,6 +22,7 @@ class Controller(object):
         """
         self.user = User()
         self.ride = Ride()
+        self.request = Request()
 
     @classmethod
     def init_db(cls, db):
@@ -40,13 +40,15 @@ class Controller(object):
             db(dict): database connection information
         """
         connection = self.create_db_connection()
-        res = self.user.create_user_table(connection)
-        resp = self.ride.create_rides_table(connection)
-        if res.get("Status") and resp.get('Status'):
-            return{'Status': True, 'Message': 'All tables created'}
-        return{'Status': False, 'Message':
-                                {'User table error': res.get('Message'),
-                                 'Rides table error': resp.get('Message')}}
+        result = self.request.create_requests_table(connection)
+        print(result.get('Message'))
+        # res = self.user.create_user_table(connection)
+        # resp = self.ride.create_rides_table(connection)
+        # if res.get("Status") and resp.get('Status'):
+        #     return{'Status': True, 'Message': 'All tables created'}
+        # return{'Status': False, 'Message':
+        #                         {'User table error': res.get('Message'),
+        #                          'Rides table error': resp.get('Message')}}
 
     def drop_all(self):
         """Delete all tables."""
@@ -166,6 +168,22 @@ class Controller(object):
         """Fetch a ride from db."""
         connection = self.create_db_connection()
         res = self.ride.get_ride_by_id(connection, ride_id)
+        if res.get('Status'):
+            return {'Status': True, 'Message': res.get('Message')}
+        return {'Status': False, 'Message': res.get('Message')}
+
+    def request_ride(self, user, ride_id):
+        """Make a ride request."""
+        connection = self.create_db_connection()
+        owner_data = self.user.find_user(connection, user).get('Message')
+        owner_id = owner_data[0][0]
+        ride_data = self.ride.get_ride_by_id(connection, ride_id).get('Message')
+        ride_owner = ride_data[0][9]
+        if user == ride_owner:
+            return {'Status': False,
+                    "Message": "You cant request your own ride"}
+        res = self.request.create_request(connection, {"Passenger Id": owner_id,
+                                                       "Ride Id": ride_id})
         if res.get('Status'):
             return {'Status': True, 'Message': res.get('Message')}
         return {'Status': False, 'Message': res.get('Message')}

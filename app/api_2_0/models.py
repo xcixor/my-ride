@@ -31,7 +31,6 @@ class User(object):
                                          Driver Boolean);"
             cursor.execute(query)
             conn.commit()
-            conn.close()
             return {'Status': True, 'Message': 'Success!'}
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
@@ -44,7 +43,6 @@ class User(object):
             query = "DROP TABLE users;"
             cursor.execute(query)
             conn.commit()
-            conn.close()
             return {'Status': True, 'Message': 'Success!'}
         except Exception as e:
             return {'Status': False, 'Message': e}
@@ -70,7 +68,6 @@ class User(object):
                                 format(email, password, user_type)
                         cursor.execute(query)
                         conn.commit()
-                        conn.close()
                         return {"Status": True, "Message": "Succesfuly created user record"}
                     return {"Status": False, "Message": "Passwords dont match!"}
                 return {"Status": False, "Message": "Password should not be less than six characters"}
@@ -132,7 +129,6 @@ class Ride(object):
             print('Error from controler', cursor.execute(query))
 
             conn.commit()
-            conn.close()
             return {'Status': True, 'Message': 'Success!'}
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
@@ -164,7 +160,6 @@ class Ride(object):
                            no_plate, capacity, owner_id)
             cursor.execute(query)
             conn.commit()
-            conn.close()
             return {"Status": True, "Message": "Succesfuly created ride!"}
         except Exception as e:
             return {"Status": False, "Message": '{}'.format(e)}
@@ -213,3 +208,61 @@ class Ride(object):
             return {'Status': False, 'Message': 'That ride was not found'}
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
+
+
+class Request(object):
+    """Handles request transactions."""
+
+    def create_requests_table(self, connection):
+        """Create the table to store rides."""
+        conn = connection
+        cursor = conn.cursor()
+        try:
+            query = "CREATE TABLE requests (\
+                    id serial PRIMARY KEY,\
+                    Passenger_id INTEGER REFERENCES users(id),\
+                    Ride_Id INTEGER REFERENCES rides(id),\
+                    Accept_Status Boolean);"
+            cursor.execute(query)
+            conn.commit()
+            return {'Status': True, 'Message': 'Success!'}
+        except Exception as e:
+            return {'Status': False, 'Message': '{}'.format(e)}
+
+    def create_request(self, connection, request_data):
+        """Create a request."""
+        # print('*************************', connection)
+        passenger_id = request_data.get('Passenger Id')
+        ride_id = request_data.get('Ride Id')
+        accept_status = False
+        res = self.get_request(connection, passenger_id, ride_id)
+        if res.get('Status'):
+            return {'Status': False,
+                    'Message': 'You cant request the same ride twice'}
+        print('*************', res)
+        try:
+            conn = connection
+            cursor = conn.cursor()
+            query = "INSERT INTO requests (passenger_id, ride_id, accept_status)\
+                    VALUES ('{}', '{}', '{}')".\
+                    format(passenger_id, ride_id, accept_status)
+            cursor.execute(query)
+            conn.commit()
+            return {"Status": True, "Message": "Succesfuly made request!"}
+        except Exception as e:
+            return {"Status": False, "Message": '{}'.format(e)}
+
+    def get_request(self, connection, passenger_id, ride_id):
+        """Retrieve ride from db."""
+        conn = connection
+        cursor = conn.cursor()
+        try:
+            query = "SELECT * FROM requests WHERE passenger_id='{}' AND ride_id='{}'".\
+                    format(int(passenger_id), int(ride_id))
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            if rows:
+                return {'Status': True, 'Message': rows}
+            return {'Status': False, 'Message': 'That request was not found'}
+        except psycopg2.Error as e:
+            return {'Status': False, 'Message': '{}'.format(e.pgcode)}

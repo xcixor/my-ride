@@ -135,9 +135,24 @@ class CreateRide(Resource):
 
 
 class ManipulateRides(Resource):
+
+    @jwt_required
     def get(self, ride_id):
         """Get single ride."""
         res = CONTROLLER.get_ride_by_id(ride_id)
         if res.get('Status'):
             return {'Ride: ': res.get('Message')}, 200
         return {'message': res.get('Message')}
+
+
+class Requests(Resource):
+    """Manage requests."""
+
+    @jwt_required
+    def post(self, ride_id):
+        """Make a ride request."""
+        user = get_raw_jwt().get('identity')
+        res = CONTROLLER.request_ride(user, ride_id)
+        if res.get('Status'):
+            return {'message': res.get('Message')}, 200
+        return {'message': res.get('Message')}, 401
