@@ -132,3 +132,12 @@ class CreateRide(Resource):
         if resp.get('Status'):
             return {'Rides available: ': resp.get('Message')}
         return {'Message': resp.get('Message')}
+
+
+class ManipulateRides(Resource):
+    def get(self, ride_id):
+        """Get single ride."""
+        res = CONTROLLER.get_ride_by_id(ride_id)
+        if res.get('Status'):
+            return {'Ride: ': res.get('Message')}, 200
+        return {'message': res.get('Message')}

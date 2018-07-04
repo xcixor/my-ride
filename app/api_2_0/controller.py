@@ -161,3 +161,11 @@ class Controller(object):
         if res.get('Status'):
             return {'Status': True, 'Message': res.get('Message')}
         return {'Status': False, 'Message': res.get('Message')}
+
+    def get_ride_by_id(self, ride_id):
+        """Fetch a ride from db."""
+        connection = self.create_db_connection()
+        res = self.ride.get_ride_by_id(connection, ride_id)
+        if res.get('Status'):
+            return {'Status': True, 'Message': res.get('Message')}
+        return {'Status': False, 'Message': res.get('Message')}

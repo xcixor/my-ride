@@ -180,7 +180,7 @@ class Ride(object):
             rows = cursor.fetchall()
             if rows:
                 return {'Status': True, 'Message': rows}
-            return {'Status': False, 'Message': 'User not registered'}
+            return {'Status': False, 'Message': 'That ride was not found'}
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
 
@@ -196,5 +196,20 @@ class Ride(object):
                 return {'Status': True, 'Message': rows}
             return {'Status': False, 'Message': 'No rides at this moment, \
                                                  check again later!'}
+        except Exception as e:
+            return {'Status': False, 'Message': '{}'.format(e)}
+
+    def get_ride_by_id(self, connection, ride_id):
+        """Retrieve ride from db."""
+        conn = connection
+        cursor = conn.cursor()
+        try:
+            query = "SELECT * FROM rides WHERE id='{}'".\
+                    format(ride_id)
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            if rows:
+                return {'Status': True, 'Message': rows}
+            return {'Status': False, 'Message': 'That ride was not found'}
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
