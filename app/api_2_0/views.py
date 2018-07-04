@@ -45,7 +45,7 @@ class UserSignup(Resource):
         resp = CONTROLLER.create_user(user_data)
         if resp.get('Status'):
             return {'Message': resp.get('Message')}, 201
-        return {'Message': resp.get('Message')}, 400
+        return {'Message': resp.get('Message')}, 403
 
 
 class UserLogin(Resource):
@@ -75,9 +75,9 @@ class UserLogin(Resource):
                 access_token = create_access_token(identity=email)
                 return {'Message': 'Successfuly logged in',
                         'access-token': access_token}, 200
-            except Exception as e:
+            except Exception:
                 return {'Status': False,
-                        'Message': '{}'.format(e)}, 500
+                        'Message': 'Your login has expired please login again'}, 500
         return {'Message': resp.get('Message')}, 403
 
 
@@ -131,7 +131,7 @@ class CreateRide(Resource):
         resp = CONTROLLER.get_rides()
         if resp.get('Status'):
             return {'Rides available: ': resp.get('Message')}
-        return {'Message': resp.get('Message')}
+        return {'Message': resp.get('Message')}, 404
 
 
 class ManipulateRides(Resource):
@@ -145,7 +145,7 @@ class ManipulateRides(Resource):
 
 
 class Requests(Resource):
-    """Manage requests."""
+    """Create requests."""
 
     @jwt_required
     def post(self, ride_id):
@@ -153,5 +153,17 @@ class Requests(Resource):
         user = get_raw_jwt().get('identity')
         res = CONTROLLER.request_ride(user, ride_id)
         if res.get('Status'):
-            return {'message': res.get('Message')}, 200
+            return {'message': res.get('Message')}, 201
         return {'message': res.get('Message')}, 401
+
+
+class ManageRequests(Resource):
+    """Manage requests."""
+    @jwt_required
+    def get(self, ride_id):
+        """Display ride requests."""
+        user = get_raw_jwt().get('identity')
+        requests = CONTROLLER.get_requests(ride_id, user)
+        if requests.get('Status'):
+            return {'message': requests.get('Message')}, 200
+        return {'message': requests.get('Message')}, 401

@@ -152,7 +152,6 @@ class Controller(object):
 
         resp = self.validate_date(date)
         if resp.get('Status'):
-            # print('*************************', self.validate_date(date))
             res = self.ride.create_ride(connection, ride_data)
             if res.get('Status'):
                 return {'Status': True, 'Message': res.get('Message')}
@@ -185,8 +184,28 @@ class Controller(object):
         if owner_id == ride_owner:
             return {'Status': False,
                     "Message": "You cant request your own ride"}
-        res = self.request.create_request(connection, {"Passenger Id": owner_id,
-                                                       "Ride Id": ride_id})
+        res = self.request.create_request(connection, {
+            "Passenger Id": owner_id,
+            "Ride Id": ride_id,
+            'Email': user
+        })
         if res.get('Status'):
             return {'Status': True, 'Message': res.get('Message')}
         return {'Status': False, 'Message': res.get('Message')}
+
+    def get_requests(self, ride_id, user):
+        """Request rides requests from db."""
+        connection = self.create_db_connection()
+        owner_data = self.user.find_user(connection, user).get('Message')
+        owner_id = owner_data[0][0]
+        ride = self.ride.get_ride_by_id(connection, ride_id)
+        ride_data = ride.get('Message')
+        ride_owner = ride_data[0][9]
+        if ride.get('Status'):
+            if owner_id == ride_owner:
+                requests = self.request.get_ride_requests(connection, ride_id)
+                if requests.get('Status'):
+                    return {'Status': True, 'Message': requests.get('Message')}
+                return {'Status': False, 'Message': requests.get('Message')}
+            return {'Status': False, 'Message': 'You dont have access to that ride'}
+        return {'Status': False, 'Message': ride.get('Message')}

@@ -232,6 +232,7 @@ class Request(object):
         try:
             query = "CREATE TABLE IF NOT EXISTS requests (\
                     id serial PRIMARY KEY,\
+                    email TEXT,\
                     Passenger_id INTEGER REFERENCES users(id),\
                     Ride_Id INTEGER REFERENCES rides(id),\
                     Accept_Status Boolean);"
@@ -244,6 +245,7 @@ class Request(object):
     def create_request(self, connection, request_data):
         """Create a request."""
         passenger_id = request_data.get('Passenger Id')
+        email = request_data.get('Email')
         ride_id = request_data.get('Ride Id')
         accept_status = False
         res = self.get_request(connection, passenger_id, ride_id)
@@ -253,9 +255,9 @@ class Request(object):
         try:
             conn = connection
             cursor = conn.cursor()
-            query = "INSERT INTO requests (passenger_id, ride_id, accept_status)\
-                    VALUES ('{}', '{}', '{}')".\
-                    format(passenger_id, ride_id, accept_status)
+            query = "INSERT INTO requests (passenger_id, email, ride_id, accept_status)\
+                    VALUES ('{}', '{}', '{}', '{}')".\
+                    format(passenger_id, email, ride_id, accept_status)
             cursor.execute(query)
             conn.commit()
             return {"Status": True, "Message": "Succesfuly made request!"}
@@ -286,5 +288,20 @@ class Request(object):
             cursor.execute(query)
             conn.commit()
             return {'Status': True, 'Message': 'Success!'}
+        except Exception as e:
+            return {'Status': False, 'Message': e}
+
+    def get_ride_requests(self, connection, ride_id):
+        """Fetch the requests of a user."""
+        conn = connection
+        cursor = conn.cursor()
+        try:
+            query = "SELECT * FROM requests WHERE ride_id='{}'".format(int(ride_id))
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            conn.commit()
+            if rows:
+                return {'Status': True, "Message": rows}
+            return {'Status': False, 'Message': 'There are no requests for that ride'}
         except Exception as e:
             return {'Status': False, 'Message': e}
