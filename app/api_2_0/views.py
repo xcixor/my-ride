@@ -158,7 +158,8 @@ class Requests(Resource):
 
 
 class ManageRequests(Resource):
-    """Manage requests."""
+    """Get requests requests."""
+
     @jwt_required
     def get(self, ride_id):
         """Display ride requests."""
@@ -167,3 +168,27 @@ class ManageRequests(Resource):
         if requests.get('Status'):
             return {'message': requests.get('Message')}, 200
         return {'message': requests.get('Message')}, 401
+
+
+class RequestStatus(Resource):
+    """Set the status of a ride request."""
+
+    @jwt_required
+    def put(self, ride_id, request_id):
+        """Accept or reject a ride."""
+        parser = reqparse.RequestParser()
+        parser.add_argument('Status', type=str,
+                            help='Please state your decision, \
+                            Accept or Reject', required=True)
+        args = parser.parse_args()
+
+        status = False
+        if args.get('Status') == 'Accept':
+            status = True
+        request_data = {
+            'Status': status
+        }
+        res = CONTROLLER.set_request_status(request_data, request_id, ride_id)
+        if res.get('Status'):
+            return {'message': res.get('Message')}, 200
+        return {'message': res.get('Message')}, 401

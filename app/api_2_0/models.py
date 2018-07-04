@@ -304,4 +304,17 @@ class Request(object):
                 return {'Status': True, "Message": rows}
             return {'Status': False, 'Message': 'There are no requests for that ride'}
         except Exception as e:
-            return {'Status': False, 'Message': e}
+            return {'Status': False, 'Message': '{}'.format(e)}
+
+    def set_request_status(self, connection, status, request_id, ride_id):
+        """Accept or reject a request."""
+        conn = connection
+        cursor = conn.cursor()
+        try:
+            query = "UPDATE requests SET accept_status='{}' WHERE id='{}' \
+                     and ride_id='{}'".format(status, request_id, ride_id)
+            cursor.execute(query)
+            conn.commit()
+            return {'Status': True, 'Message': 'request updates succesfuly'}
+        except Exception as e:
+            return {'Status': False, 'Message': '{}'.format(e)}

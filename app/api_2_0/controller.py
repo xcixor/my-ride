@@ -209,3 +209,12 @@ class Controller(object):
                 return {'Status': False, 'Message': requests.get('Message')}
             return {'Status': False, 'Message': 'You dont have access to that ride'}
         return {'Status': False, 'Message': ride.get('Message')}
+
+    def set_request_status(self, request_data, request_id, ride_id):
+        """Accept or reject ride."""
+        status = request_data.get('Status')
+        connection = self.create_db_connection()
+        result = self.request.set_request_status(connection, status, request_id, ride_id)
+        if result.get('Status'):
+            return {'Status': True, 'Message': result.get('Message')}
+        return {'Status': True, 'Message': result.get('Message')}

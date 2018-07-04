@@ -68,28 +68,6 @@ class TestRideEndpoints(unittest.TestCase):
                                       'Bearer '+access_token})
         self.assertEqual(201, response.status_code)
 
-    # def create_ride(self):
-    #     """Create ride to use for subsequent tests."""
-    #     response = self.client().post('/api/v2/auth/register',
-    #                                   data=self.driver)
-
-    #     logins = {'Email': 'p@gmail.com', 'Password': 'pass123'}
-
-    #     res = self.client().post('/api/v2/auth/login', data=logins)
-    #     resp = json.loads(res.data.decode('UTF-8'))
-
-    #     access_token = resp.get('access-token')
-
-    #     response = self.client().post('/api/v2/rides', data=self.ride,
-    #                                   headers={'Authorization':
-    #                                            'Bearer '+access_token})
-    #     ride_data = json.loads(response.data.decode('utf-8'))
-    #     print(ride_data,'******************************')
-    #     ride = self.client().post('/api/v2/ride', headers={'Authorization':
-    #                                                        'Bearer '+access_token})
-    #     print(ride)
-    #     return {'token': access_token, 'ride': ride_data}
-
     def test_get_existing_rides_success(self):
         """Test user can get a ride."""
         response = self.client().post('/api/v2/auth/register',
@@ -178,46 +156,104 @@ class TestRideEndpoints(unittest.TestCase):
                                            'Bearer '+pass_token})
         self.assertEqual(201, resp.status_code)
 
-    # def test_accept_request_success(self):
-    #     """Test driver can accept a reques."""
-    #     data = self.create_ride()
-    #     access_token = data.get('token')
-    #     ride_id = data.get('ride').get('Id')
-    #     resp = self.client().put('/api/v2/rides/{}/requests'.format(ride_id),
-    #                              data=self.request)
-    #     resp_data = json.loads(resp.data.decode('UTF-8'))
-    #     self.assertEqual('Request made successfully', resp_data.get('Message'))
+    def test_accept_request_success(self):
+        """Test driver can accept a reques."""
+        # Create driver.
+        user_response = self.client().post('/api/v2/auth/register',
+                                           data=self.driver)
+        self.assertEqual(201, user_response.status_code)
 
-    #     resp = self.client().post('/api/v2/user/rides/{}/\
-    #                               requests/1'.format(ride_id),
-    #                               data={'email': 'dush@yahoo.com',
-    #                               'status': True},
-    #                               headers={'Authorization':
-    #                                        'Bearer '+access_token})
-    #     resp_data = json.loads(resp.data.decode('UTF-8'))
-    #     self.assertEqual('Request Accepted', resp_data.get('Message'))
+        # login driver to create ride
+        logins = {'Email': 'p@gmail.com', 'Password': 'pass123'}
+        res = self.client().post('/api/v2/auth/login', data=logins)
+        self.assertEqual(200, res.status_code)
 
-    # def test_reject_request_success(self):
-    #     """Test driver can accept a request."""
-    #     data = self.create_ride()
-    #     access_token = data.get('token')
-    #     ride_id = data.get('ride').get('Id')
-    #     resp = self.client().put('/api/v2/rides/{}/requests'.format(ride_id),
-    #                              data=self.request)
-    #     resp_data = json.loads(resp.data.decode('UTF-8'))
-    #     self.assertEqual('Request made successfully', resp_data.get('Message'))
+        # get token
+        resp = json.loads(res.data.decode('UTF-8'))
+        access_token = resp.get('access-token')
 
-    #     resp = self.client().post('/api/v2/user/rides/{}/\
-    #                               requests/1'.format(ride_id),
-    #                               data={'email': 'dush@yahoo.com',
-    #                                     'status': False},
-    #                               headers={'Authorization':
-    #                                        'Bearer '+access_token})
-    #     resp_data = json.loads(resp.data.decode('UTF-8'))
-    #     self.assertEqual('Request Rejected', resp_data.get('Message'))
+        # create ride
+        response = self.client().post('/api/v2/rides', data=self.ride,
+                                      headers={'Authorization':
+                                               'Bearer '+access_token})
+
+        # create passenger
+        self.assertEqual(201, response.status_code)
+        response = self.client().post('/api/v2/auth/register',
+                                      data=self.passenger)
+        self.assertEqual(201, response.status_code)
+
+        # login passenger
+        logins = {'Email': 'p@g.com', 'Password': 'pass123'}
+        login_res = self.client().post('/api/v2/auth/login', data=logins)
+        self.assertEqual(200, login_res.status_code)
+
+        # get token
+        login_resp = json.loads(login_res.data.decode('UTF-8'))
+        pass_token = login_resp.get('access-token')
+
+        # make request
+        ride_resp = self.client().post('/api/v2/rides/1/requests',
+                                       headers={'Authorization':
+                                                'Bearer '+pass_token})
+        self.assertEqual(201, ride_resp.status_code)
+
+        status_resp = self.client().put('/api/v2/users/rides/1/requests/1',
+                                        data={'Status': 'Accept'},
+                                        headers={'Authorization': 'Bearer '+access_token})
+        some_resp = json.loads(status_resp.data.decode('UTF-8'))
+        self.assertEqual(200, status_resp.status_code)
+
+    def test_reject_request_success(self):
+        """Test driver can accept a request."""
+        # Create driver.
+        user_response = self.client().post('/api/v2/auth/register',
+                                           data=self.driver)
+        self.assertEqual(201, user_response.status_code)
+
+        # login driver to create ride
+        logins = {'Email': 'p@gmail.com', 'Password': 'pass123'}
+        res = self.client().post('/api/v2/auth/login', data=logins)
+        self.assertEqual(200, res.status_code)
+
+        # get token
+        resp = json.loads(res.data.decode('UTF-8'))
+        access_token = resp.get('access-token')
+
+        # create ride
+        response = self.client().post('/api/v2/rides', data=self.ride,
+                                      headers={'Authorization':
+                                               'Bearer '+access_token})
+
+        # create passenger
+        self.assertEqual(201, response.status_code)
+        response = self.client().post('/api/v2/auth/register',
+                                      data=self.passenger)
+        self.assertEqual(201, response.status_code)
+
+        # login passenger
+        logins = {'Email': 'p@g.com', 'Password': 'pass123'}
+        login_res = self.client().post('/api/v2/auth/login', data=logins)
+        self.assertEqual(200, login_res.status_code)
+
+        # get token
+        login_resp = json.loads(login_res.data.decode('UTF-8'))
+        pass_token = login_resp.get('access-token')
+
+        # make request
+        ride_resp = self.client().post('/api/v2/rides/1/requests',
+                                       headers={'Authorization':
+                                                'Bearer '+pass_token})
+        self.assertEqual(201, ride_resp.status_code)
+
+        status_resp = self.client().put('/api/v2/users/rides/1/requests/1',
+                                        data={'Status': 'Reject'},
+                                        headers={'Authorization': 'Bearer '+access_token})
+        self.assertEqual(200, status_resp.status_code)
 
     def test_get_ride_requests_success(self):
-        """Create driver."""
+        """Test ride requests can be retrieved."""
+        # Create driver.
         user_response = self.client().post('/api/v2/auth/register',
                                       data=self.driver)
         self.assertEqual(201, user_response.status_code)

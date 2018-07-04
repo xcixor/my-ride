@@ -216,30 +216,38 @@ class TestController(unittest.TestCase):
         requests = self.controller.get_requests(1, 'p@gmail.com')
         self.assertEqual(len(requests.get('Message')), 1)
 
-    # def test_user_reject_ride_success(self):
-    #     """Test user can reject a request successfuly."""
-    #     res = self.controller.create_user(self.driver)
-    #     self.assertTrue(res.get('Status'))
-    #     res = self.controller.create_ride(self.ride)
-    #     self.assertEqual(res.get('Message'),
-    #                      'Your ride has been created successfuly')
-    #     res = self.controller.create_user(self.passenger)
-    #     self.assertTrue(res.get('Message'))
-    #     resp = self.controller.request_ride({"User Id": 1})
-    #     self.assertTrue(resp.get('Status'))
-    #     res = self.controller.reject_request(1, {"Request Id": 1})
-    #     self.assertTrue(res.get('Status'))
+    def test_user_reject_ride_success(self):
+        """Test user can reject a request successfuly."""
+        res = self.controller.create_user(self.driver)
+        self.assertTrue(res.get('Status'))
+        res = self.controller.create_ride(self.ride)
+        self.assertEqual(res.get('Message'),
+                         'Succesfuly created ride!')
+        res = self.controller.create_user(self.passenger)
+        self.assertTrue(res.get('Message'))
 
-    # def test_user_can_accept_ride_success(self):
-    #     """Test user can accept a ride successfuly."""
-    #     res = self.controller.create_user(self.driver)
-    #     self.assertTrue(res.get('Status'))
-    #     res = self.controller.create_ride(self.ride)
-    #     self.assertEqual(res.get('Message'),
-    #                      'Your ride has been created successfuly')
-    #     res = self.controller.create_user(self.passenger)
-    #     self.assertTrue(res.get('Message'))
-    #     resp = self.controller.request_ride(1, {"User Id": 1})
-    #     self.assertTrue(resp.get('Status'))
-    #     res = self.controller.accept_request(1, {"Request Id": 1})
-    #     self.assertTrue(res.get('Status'))
+        resp = self.controller.request_ride('pr@gmail.com', 1)
+        self.assertEqual(resp.get('Message'), 'Succesfuly made request!')
+
+        request_data = {'Status': False}
+
+        result = self.controller.set_request_status(request_data, 1, 1)
+        self.assertEqual('request updates succesfuly', result.get('Message'))
+
+    def test_user_can_accept_ride_success(self):
+        """Test user can accept a ride successfuly."""
+        res = self.controller.create_user(self.driver)
+        self.assertTrue(res.get('Status'))
+        res = self.controller.create_ride(self.ride)
+        self.assertEqual(res.get('Message'),
+                         'Succesfuly created ride!')
+        res = self.controller.create_user(self.passenger)
+        self.assertTrue(res.get('Message'))
+
+        resp = self.controller.request_ride('pr@gmail.com', 1)
+        self.assertEqual(resp.get('Message'), 'Succesfuly made request!')
+
+        request_data = {'Status': True}
+
+        result = self.controller.set_request_status(request_data, 1, 1)
+        self.assertEqual('request updates succesfuly', result.get('Message'))
