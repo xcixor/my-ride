@@ -29,7 +29,7 @@ ride-my-way App is a carpooling application that provides drivers with the abili
 | /api/v1/ride/&lt;ride_id&gt;                    |   PUT      | Update ride details       |    TRUE         |
 | /api/v1/rides                                   |   GET      | Retrieve rides            |    FALSE        |
 | /api/v1/rides/&lt;ride_id&gt;                   |   GET      | Retrieve a ride           |    TRUE         |
-| /api/v1/ride/&lt;business_id&gt;/requests       |   POST     | Request a ride            |    TRUE         |
+| /api/v1/ride/&lt;ride_id&gt;/requests       |   POST     | Request a ride            |    TRUE         |
 
 * From there build on this app
 

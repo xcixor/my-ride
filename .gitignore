@@ -10,3 +10,4 @@ wireframes
 .vscode/
 .gitignore
 app/specifications.txt
+.env
