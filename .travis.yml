@@ -9,5 +9,12 @@ install:
 script:
   - py.test --cov=app tests/ && coverage report
 
+services:
+  - postgres
+
+before_script:
+  - psql -c "create database rides_test;" -U postgres
+  - psql -c "create user rider with password 'pass123';" -U postgres
+
 after_success:
   - coveralls

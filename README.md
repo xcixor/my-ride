@@ -1,6 +1,5 @@
 [![Build Status](https://travis-ci.org/xcixor/my-ride.svg?branch=158619400-edit-ride)](https://travis-ci.org/xcixor/my-ride)
-[![Maintainability](https://api.codeclimate.com/v1/badges/80451ea43faa9ca7b80d/maintainability)](https://codeclimate.com/github/xcixor/my-ride/maintainability)
-[![Coverage Status](https://coveralls.io/repos/github/xcixor/my-ride/badge.svg?branch=158619400-edit-ride)](https://coveralls.io/github/xcixor/my-ride?branch=158619400-edit-ride)
+[![Coverage Status](https://coveralls.io/repos/github/xcixor/my-ride/badge.svg)](https://coveralls.io/github/xcixor/my-ride)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c0fe78ccda6444e9baef4265469e29e8)](https://www.codacy.com/app/xcixor/my-ride?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=xcixor/my-ride&amp;utm_campaign=Badge_Grade)
 
 ## Purpose
@@ -23,21 +22,23 @@ ride-my-way App is a carpooling application that provides drivers with the abili
 ### endpoints
 |Resource urls                                    | Method     | Description               | Requires token  |
 |-------------------------------------------------|------------|---------------------------|-----------------|
-| /api/v1/auth/register                           |   POST     | Register a user           |    FALSE        |
-| /api/v1/auth/login                              |   POST     | Login user                |    FALSE        |
-| /api/v1/rides                                   |   POST     | Create ride               |    TRUE         |
-| /api/v1/ride/&lt;ride_id&gt;                    |   PUT      | Update ride details       |    TRUE         |
-| /api/v1/rides                                   |   GET      | Retrieve rides            |    FALSE        |
-| /api/v1/rides/&lt;ride_id&gt;                   |   GET      | Retrieve a ride           |    TRUE         |
-| /api/v1/ride/&lt;business_id&gt;/requests       |   POST     | Request a ride            |    TRUE         |
+| /api/v2/auth/register                           |   POST     | Register a user           |    FALSE        |
+| /api/v2/auth/login                              |   POST     | Login user                |    FALSE        |
+| /api/v2/user/rides                              |   POST     | Create ride               |    TRUE         |
+| /api/v2/rides                                   |   GET      | Retrieve rides            |    FALSE        |
+| /api/v2/rides/&lt;ride_id&gt;                   |   GET      | Retrieve a ride           |    TRUE         |
+| /api/v2/ride/&lt;ride_id&gt;/requests           |   POST     | Request a ride            |    TRUE         |
+| /api/v2/users/rides/&lt;ride_id&gt;             |   PUT      | Accept or reject a request|    TRUE         |
+| /requests/&lt;ride_id&gt;                       |            |                           |                 |
+| /users/rides/&lt;ride_id&gt;/requests           |   GET      | Fetch a ride's requests   |    TRUE         |
 
 * From there build on this app
 
 ## Documentation
-You can view the documentation of the api at [apiary](https://myride.docs.apiary.io/#)
+You can view the documentation of the api at [apiary](https://myride2.docs.apiary.io/)
 
 ## Deployment
-my-ride is hosted at [heroku]( https://my-ride.herokuapp.com/)
+my-ride is hosted at [heroku](https://my-ride-2.herokuapp.com/api/v2/)
 
 ## Built with
 #### Backend

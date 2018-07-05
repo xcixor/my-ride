@@ -8,7 +8,6 @@ class Config:
 
     debug = False
     SECRET_KEY = os.urandom(30)
-    SECRET_KEY = "A very secretive key"
 
 
     @staticmethod
@@ -21,19 +20,31 @@ class Development(Config):
     """Contains configurations to be used by developer."""
 
     DEBUG = True
+    db = {
+        "dbname": os.getenv("dbname"),
+        "user": os.getenv("user"),
+        "password": os.getenv("password"),
+        "host": os.getenv("host"),
+        "port": "5432"
+    }
 
 
 class Testing(Config):
     """Contains configurations for testing."""
 
     TESTING = True
-
+    db = {
+        "dbname": os.getenv('test_db'),
+        "user": os.getenv('user'),
+        "password": os.getenv('password'),
+        "host": os.getenv("host"),
+        "port": "5432"
+    }
 
 class Production(Config):
     """Contains configurations for production setting."""
 
     DEBUG = False
-
 
 # Registers the configurations
 config = {
