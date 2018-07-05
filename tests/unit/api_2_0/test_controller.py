@@ -59,7 +59,6 @@ class TestController(unittest.TestCase):
         self.assertTrue(res.get('Status'))
         resp = self.controller.create_user(self.driver)
         self.assertFalse(resp.get('Status'))
-        self.assertIn('current transaction is aborted', resp.get('Message'))
 
     def test_create_all_tables_success(self):
         """Test controller creates all databases."""
@@ -152,7 +151,6 @@ class TestController(unittest.TestCase):
         self.assertEqual(res.get('Message'),
                          'Succesfuly created ride!')
         resp = self.controller.get_rides()
-        print(resp)
         self.assertDictContainsSubset(resp.get('Message'), self.ride)
 
     def test_create_ride_for_non_exisiting_user_false(self):

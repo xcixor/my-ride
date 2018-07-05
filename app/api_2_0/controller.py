@@ -42,14 +42,15 @@ class Controller(object):
         request = Request()
         connection = self.create_db_connection()
         res = user.create_user_table(connection)
-        resp = ride.create_rides_table(connection)
-        result = request.create_requests_table(connection)
-        if res.get("Status") and resp.get('Status') and result.get('Status'):
-            return{'Status': True, 'Message': 'All tables created'}
-        return{'Status': False, 'Message':
-                                {'User table error': res.get('Message'),
-                                 'Rides table error': resp.get('Message')},
-                                 'Request table error': result.get('Message')}
+        if res.get('Status'):
+            resp = ride.create_rides_table(connection)
+            if resp.get('Status'):
+                result = request.create_requests_table(connection)
+                if result.get('Status'):
+                    return {'Status': True, 'Message': 'All tables created'}
+                return {'Status': result.get('Message')}
+            return {'Status': False, 'Message': resp.get('Message')}
+        return {'Status': False, 'Message': res.get('Message')}
 
     def drop_all(self):
         """Delete all tables."""
@@ -58,11 +59,15 @@ class Controller(object):
         request = Request()
         connection = self.create_db_connection()
         resp = request.delete_requests_table(connection)
-        result = ride.delete_rides_table(connection)
-        res = user.delete_user_table(connection)
-        if res.get('Status'):
-            return{'Status': True, 'Message': res.get('Message')}
-        return{'Status': False, 'Message': res.get('Message')}
+        if resp.get('Status'):
+            result = ride.delete_rides_table(connection)
+            if result.get('Status'):
+                res = user.delete_user_table(connection)
+                if res.get('Status'):
+                    return {'Status': True, 'Message': 'Deleted all tables'}
+                return {'Status': False, 'Message': res.get('Message')}
+            return {'Status': False, 'Message': result.get('Message')}
+        return {'Status': False, 'Message': resp.get('Message')}
 
     def create_user(self, user_data):
         """Create a user record."""
