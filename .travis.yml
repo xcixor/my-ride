@@ -3,18 +3,22 @@ language: python
 python:
   - "3.6.5"
 
-install:
-  - pip install -r requirements.txt
-
-script:
-  - py.test --cov=app tests/ && coverage report
-
 services:
   - postgres
+
+install:
+  - pip install -r requirements.txt
 
 before_script:
   - psql -c "create database rides_test;" -U postgres
   - psql -c "create user rider with password 'pass123';" -U postgres
+
+script:
+  - py.test --cov=app tests/ && coverage report
+  - export test_db='rides_test'
+  - export user='postgres'
+  - export password='pass123'
+  - export host='127.0.0.1'
 
 after_success:
   - coveralls
