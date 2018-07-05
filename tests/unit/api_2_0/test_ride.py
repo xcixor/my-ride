@@ -94,6 +94,7 @@ class TestRideEndpoints(unittest.TestCase):
 
 
     def test_get_inexisting_rides_false(self):
+        """Test user gets error message on querying for a non existent ride."""
         resp = self.client().post('/api/v2/rides')
         self.assertEqual(401, resp.status_code)
 

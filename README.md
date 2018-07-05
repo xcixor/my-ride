@@ -52,8 +52,6 @@ my-ride 1.0
 ## Licenses
 None
 #### Front end
-* css
-* html
 * js
 
 You can preview the frontend via this [link](https://xcixor.github.io/my-ride)
