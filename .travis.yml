@@ -15,10 +15,6 @@ before_script:
 
 script:
   - py.test --cov=app tests/ && coverage report
-  - export test_db='rides_test'
-  - export user='postgres'
-  - export password='pass123'
-  - export host='127.0.0.1'
 
 after_success:
   - coveralls
