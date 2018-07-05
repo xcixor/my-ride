@@ -181,7 +181,6 @@ class RequestStatus(Resource):
                             help='Please state your decision, \
                             Accept or Reject', required=True)
         args = parser.parse_args()
-
         status = False
         if args.get('Status') == 'Accept':
             status = True

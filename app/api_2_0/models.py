@@ -9,9 +9,17 @@ BCRYPT = Bcrypt()
 class User(object):
     """Handles user transactions."""
 
-    def __init__(self):
-        """Create the user table."""
-        pass
+    def __init__(self, user_data=None):
+        """Initialize a new user.
+
+        Args:
+            user_data(dict): Details of a user
+        """
+        if user_data:
+            self.email = user_data.get('email')
+            self.password = user_data.get('password')
+            self.confirm_password = user_data.get('confirm_password')
+            self.user_type = user_data.get('user_type')
 
     def create_user_table(self, connection):
         """Create user table."""
@@ -47,25 +55,21 @@ class User(object):
         except Exception as e:
             return {'Status': False, 'Message': e}
 
-    def create_user(self, connection, user_data):
+    def create_user(self, connection):
         """Create user record."""
-        email = user_data.get('email')
-        password = user_data.get('password')
-        confirm_password = user_data.get('confirm_password')
-        user_type = user_data.get('user_type')
 
-        if self.find_user(connection, email).get('Status'):
+        if self.find_user(connection, self.email).get('Status'):
             return {'Status': False, 'Message': 'User already exists'}
         conn = connection
         cursor = conn.cursor()
         try:
-            if User.verify_email(email):
-                if User.check_password_length(password):
-                    if User.confirm_password(password, confirm_password):
-                        user_pass = BCRYPT.generate_password_hash(password)
+            if User.verify_email(self.email):
+                if User.check_password_length(self.password):
+                    if User.confirm_password(self.password, self.confirm_password):
+                        user_pass = BCRYPT.generate_password_hash(self.password)
                         query = "INSERT INTO users (email, user_password, driver) \
                                 VALUES ('{}', '{}', '{}')".\
-                                format(email, password, user_type)
+                                format(self.email, self.password, self.user_type)
                         cursor.execute(query)
                         conn.commit()
                         return {"Status": True, "Message": "Succesfuly created user record"}
@@ -111,6 +115,23 @@ class User(object):
 class Ride(object):
     """Handles ride transactions."""
 
+    def __init__(self, ride_data=None):
+        """Initialize a ride.
+
+        Args:
+            ride_data(dict): Details of the new ride
+        """
+        if ride_data:
+            self.destination = ride_data.get('Destination')
+            self.origin = ride_data.get('Origin')
+            self.departure_time = ride_data.get('Time')
+            self.departure_date = ride_data.get('Date')
+            self.ride_name = ride_data.get('Ride Name')
+            self.identifier = ride_data.get('Identifier')
+            self.no_plate = ride_data.get('No Plate')
+            self.capacity = ride_data.get('Capacity')
+            self.owner_id = ride_data.get('Owner Id')
+
     def create_rides_table(self, connection):
         """Create the table to store rides."""
         conn = connection
@@ -133,19 +154,9 @@ class Ride(object):
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
 
-    def create_ride(self, connection, ride_data):
+    def create_ride(self, connection):
         """Create a ride."""
-        destination = ride_data.get('Destination')
-        origin = ride_data.get('Origin')
-        departure_time = ride_data.get('Time')
-        departure_date = ride_data.get('Date')
-        ride_name = ride_data.get('Ride Name')
-        identifier = ride_data.get('Identifier')
-        no_plate = ride_data.get('No Plate')
-        capacity = ride_data.get('Capacity')
-        owner_id = ride_data.get('Owner Id')
-
-        if self.get_ride(connection, identifier).get('Status'):
+        if self.get_ride(connection, self.identifier).get('Status'):
             return {'Status': False, 'Message': 'Ride already exists'}
         try:
             conn = connection
@@ -155,9 +166,9 @@ class Ride(object):
                                  no_plate, capacity, owner_id)\
                     VALUES ('{}', '{}', '{}', '{}', '{}', '{}', \
                             '{}', '{}', '{}')".\
-                    format(destination, origin, departure_time,
-                           departure_date, ride_name, identifier,
-                           no_plate, capacity, owner_id)
+                    format(self.destination, self.origin, self.departure_time,
+                           self.departure_date, self.ride_name, self.identifier,
+                           self.no_plate, self.capacity, self.owner_id)
             cursor.execute(query)
             conn.commit()
             return {"Status": True, "Message": "Succesfuly created ride!"}
@@ -188,7 +199,20 @@ class Ride(object):
             cursor.execute(query)
             rows = cursor.fetchall()
             if rows:
-                return {'Status': True, 'Message': rows}
+                k = []
+                for item in rows:
+                    ride = {
+                        "Ride Id": item[0],
+                        "Destination": item[1],
+                        "Origin": item[2],
+                        "Departure Time": item[3],
+                        "Departure Date": item[4],
+                        "Ride Name": item[5],
+                        "No Plate": item[7],
+                        "Capacity": item[8]
+                        }
+                    k.append(ride)
+                return {'Status': True, 'Message': k}
             return {'Status': False, 'Message': 'No rides at this moment, \
                                                  check again later!'}
         except Exception as e:
@@ -204,7 +228,21 @@ class Ride(object):
             cursor.execute(query)
             rows = cursor.fetchall()
             if rows:
-                return {'Status': True, 'Message': rows}
+                k = []
+                for item in rows:
+                    ride = {
+                        "Ride Id": item[0],
+                        "Destination": item[1],
+                        "Origin": item[2],
+                        "Departure Time": item[3],
+                        "Departure Date": item[4],
+                        "Ride Name": item[5],
+                        "No Plate": item[7],
+                        "Capacity": item[8],
+                        "Owner Id": item[9]
+                        }
+                    k.append(ride)
+                return {'Status': True, 'Message': k}
             return {'Status': False, 'Message': 'That ride was not found'}
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
@@ -225,6 +263,18 @@ class Ride(object):
 class Request(object):
     """Handles request transactions."""
 
+    def __init__(self, request_data=None):
+        """Initialize a new request.
+
+        Args:
+            request_data(dict): Details of the requests
+        """
+        if request_data:
+            self.passenger_id = request_data.get('Passenger Id')
+            self.email = request_data.get('Email')
+            self.ride_id = request_data.get('Ride Id')
+            self.accept_status = False
+
     def create_requests_table(self, connection):
         """Create the table to store rides."""
         conn = connection
@@ -242,13 +292,9 @@ class Request(object):
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
 
-    def create_request(self, connection, request_data):
+    def create_request(self, connection):
         """Create a request."""
-        passenger_id = request_data.get('Passenger Id')
-        email = request_data.get('Email')
-        ride_id = request_data.get('Ride Id')
-        accept_status = False
-        res = self.get_request(connection, passenger_id, ride_id)
+        res = self.get_request(connection, self.passenger_id, self.ride_id)
         if res.get('Status'):
             return {'Status': False,
                     'Message': 'You cant request the same ride twice'}
@@ -257,7 +303,7 @@ class Request(object):
             cursor = conn.cursor()
             query = "INSERT INTO requests (passenger_id, email, ride_id, accept_status)\
                     VALUES ('{}', '{}', '{}', '{}')".\
-                    format(passenger_id, email, ride_id, accept_status)
+                    format(self.passenger_id, self.email, self.ride_id, self.accept_status)
             cursor.execute(query)
             conn.commit()
             return {"Status": True, "Message": "Succesfuly made request!"}
@@ -301,12 +347,20 @@ class Request(object):
             rows = cursor.fetchall()
             conn.commit()
             if rows:
-                return {'Status': True, "Message": rows}
+                k = []
+                for item in rows:
+                    ride = {
+                        "Request Id": item[0],
+                        "Requester": item[1],
+                        "Status": item[4]
+                    }
+                    k.append(ride)
+                return {'Status': True, 'Message': k}
             return {'Status': False, 'Message': 'There are no requests for that ride'}
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
 
-    def set_request_status(self, connection, status, request_id, ride_id):
+    def set_request_status(self, connection, status, ride_id, request_id):
         """Accept or reject a request."""
         conn = connection
         cursor = conn.cursor()
