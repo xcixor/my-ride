@@ -21,10 +21,10 @@ class Development(Config):
 
     DEBUG = True
     db = {
-        "dbname": "rides",
-        "user": "rider",
-        "password": "pass123",
-        "host": "localhost",
+        "dbname": os.getenv("dbname"),
+        "user": os.getenv("user"),
+        "password": os.getenv("password"),
+        "host": os.getenv("host"),
         "port": "5432"
     }
 
@@ -34,10 +34,10 @@ class Testing(Config):
 
     TESTING = True
     db = {
-        "dbname": "rides_test",
-        "user": "rider",
-        "password": "pass123",
-        "host": "localhost",
+        "dbname": os.getenv('test_db'),
+        "user": os.getenv('user'),
+        "password": os.getenv('password'),
+        "host": os.getenv("host"),
         "port": "5432"
     }
 
