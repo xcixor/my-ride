@@ -11,3 +11,4 @@ wireframes
 .gitignore
 app/specifications.txt
 .env
+.coverage

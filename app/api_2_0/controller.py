@@ -250,3 +250,8 @@ class Controller(object):
             app_ride.update_capacity(connection, status, ride_id)
             return {'Status': True, 'Message': result.get('Message')}
         return {'Status': True, 'Message': result.get('Message')}
+
+    def is_int(self, value):
+        """Test if id passed is int."""
+        if type(value) == int:
+            return True
