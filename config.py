@@ -40,6 +40,7 @@ class Testing(Config):
         "port": "5432"
     }
 
+
 class Production(Config):
     """Contains configurations for production setting."""
 

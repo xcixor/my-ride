@@ -11,6 +11,7 @@ from app.api_2_0.controller import Controller
 
 def create_app(configuration):
     """Set up the application.
+
     args:
         configuration(str): The name of the configuration type to use for
         app instance
@@ -19,7 +20,6 @@ def create_app(configuration):
         app(object): application instance
 
     """
-
     # initialize app with api
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[configuration])
@@ -32,7 +32,6 @@ def create_app(configuration):
     db_config = config[configuration].db
     db.init_db(db_config)
     db.create_all()
-    # db.drop_all()
 
     # Register blueprints
     app.register_blueprint(api_v1, url_prefix='/api/v1')

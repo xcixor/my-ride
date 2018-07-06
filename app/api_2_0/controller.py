@@ -96,8 +96,9 @@ class Controller(object):
         connection = None
         try:
             db_url = "dbname={} user={} password={} host={} port={}".\
-                      format(Controller.dbname, Controller.user, Controller.password,
-                             Controller.host, Controller.port)
+                      format(Controller.dbname, Controller.user,
+                             Controller.password, Controller.host,
+                             Controller.port)
             connection = psycopg2.connect(db_url)
         except Exception as e:
             raise e
@@ -233,7 +234,8 @@ class Controller(object):
                 if requests.get('Status'):
                     return {'Status': True, 'Message': requests.get('Message')}
                 return {'Status': False, 'Message': requests.get('Message')}
-            return {'Status': False, 'Message': 'You dont have access to that ride'}
+            return {'Status': False, \
+                    'Message': 'You dont have access to that ride'}
         return {'Status': False, 'Message': ride.get('Message')}
 
     def set_request_status(self, request_data, request_id, ride_id):
@@ -245,13 +247,9 @@ class Controller(object):
         ride = app_ride.get_ride_by_id(connection, ride_id)
         if not ride.get('Status'):
             return {'Status': False, 'Message': ride.get('Message')}
-        result = request.set_request_status(connection, status, ride_id, request_id)
+        result = request.set_request_status(connection,
+                                            status, ride_id, request_id)
         if result.get('Status'):
             app_ride.update_capacity(connection, status, ride_id)
             return {'Status': True, 'Message': result.get('Message')}
         return {'Status': True, 'Message': result.get('Message')}
-
-    def is_int(self, value):
-        """Test if id passed is int."""
-        if type(value) == int:
-            return True

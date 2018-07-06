@@ -58,7 +58,8 @@ class UserLogin(Resource):
         """Initialize parameters."""
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('Email', type=str,
-                                 help='Please provide your email', required=True)
+                                 help='Please provide your email',
+                                 required=True)
         self.parser.add_argument('Password', type=str,
                                  help='Please provide a password',
                                  required=True)

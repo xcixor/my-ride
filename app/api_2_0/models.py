@@ -26,7 +26,7 @@ class User(object):
         conn = connection
         cursor = conn.cursor()
         try:
-            query = "CREATE TABLE IF NOT EXISTS users (id serial PRIMARY KEY, \
+            query = "CREATE TABLE IF NOT EXISTS users (id serial PRIMARY KEY,\
                                          Email VARCHAR, \
                                          User_Password TEXT, \
                                          FirstName TEXT,\
@@ -57,7 +57,6 @@ class User(object):
 
     def create_user(self, connection):
         """Create user record."""
-
         if self.find_user(connection, self.email).get('Status'):
             return {'Status': False, 'Message': 'User already exists'}
         conn = connection
@@ -65,16 +64,21 @@ class User(object):
         try:
             if User.verify_email(self.email):
                 if User.check_password_length(self.password):
-                    if User.confirm_password(self.password, self.confirm_password):
-                        user_pass = BCRYPT.generate_password_hash(self.password)
-                        query = "INSERT INTO users (email, user_password, driver) \
+                    if User.confirm_password(self.password,
+                                             self.confirm_password):
+                        query = "INSERT INTO users (email, user_password, driver)\
                                 VALUES ('{}', '{}', '{}')".\
-                                format(self.email, self.password, self.user_type)
+                                format(self.email, self.password,
+                                       self.user_type)
                         cursor.execute(query)
                         conn.commit()
-                        return {"Status": True, "Message": "Succesfuly created user record"}
-                    return {"Status": False, "Message": "Passwords dont match!"}
-                return {"Status": False, "Message": "Password should not be less than six characters"}
+                        return {"Status": True,
+                                "Message": "Succesfuly created user record"}
+                    return {"Status": False,
+                            "Message": "Passwords dont match!"}
+                return {"Status": False,
+                        "Message": "Password should not be \
+                         less than six characters"}
             return {"Status": False, "Message": "Invalid email Address!"}
         except Exception as e:
             return {"Status": False, "Message": '{}'.format(e)}
@@ -113,6 +117,7 @@ class User(object):
             return {'Status': False, 'Message': 'User not registered'}
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
+
 
 class Ride(object):
     """Handles ride transactions."""
@@ -169,8 +174,9 @@ class Ride(object):
                     VALUES ('{}', '{}', '{}', '{}', '{}', '{}', \
                             '{}', '{}', '{}')".\
                     format(self.destination, self.origin, self.departure_time,
-                           self.departure_date, self.ride_name, self.identifier,
-                           self.no_plate, self.capacity, self.owner_id)
+                           self.departure_date, self.ride_name,
+                           self.identifier, self.no_plate, self.capacity,
+                           self.owner_id)
             cursor.execute(query)
             conn.commit()
             return {"Status": True, "Message": "Succesfuly created ride!"}
@@ -255,11 +261,12 @@ class Ride(object):
         old_capacity = res.get('Message')[0]['Capacity']
         if res.get('Message'):
             if request_status:
-                new_cap = old_capacity -1
+                new_cap = old_capacity - 1
                 conn = connection
                 cursor = conn.cursor()
                 try:
-                    query = "UPDATE rides SET capacity='{}' WHERE id='{}'".format(new_cap, ride_id)
+                    query = "UPDATE rides SET capacity='{}' WHERE id='{}'".\
+                            format(new_cap, ride_id)
                     cursor.execute(query)
                     conn.commit()
                     return {'Status': True}
@@ -323,9 +330,11 @@ class Request(object):
         try:
             conn = connection
             cursor = conn.cursor()
-            query = "INSERT INTO requests (passenger_id, email, ride_id, accept_mode, accept_status)\
+            query = "INSERT INTO requests (passenger_id, email, \
+                    ride_id, accept_mode, accept_status)\
                     VALUES ('{}', '{}', '{}', '{}', '{}')".\
-                    format(self.passenger_id, self.email, self.ride_id, False, self.accept_status)
+                    format(self.passenger_id, self.email, self.ride_id,
+                           False, self.accept_status)
             cursor.execute(query)
             conn.commit()
             return {"Status": True, "Message": "Succesfuly made request!"}
@@ -337,8 +346,8 @@ class Request(object):
         conn = connection
         cursor = conn.cursor()
         try:
-            query = "SELECT * FROM requests WHERE passenger_id='{}' AND ride_id='{}'".\
-                    format(int(passenger_id), int(ride_id))
+            query = "SELECT * FROM requests WHERE passenger_id='{}' AND \
+                    ride_id='{}'".format(int(passenger_id), int(ride_id))
             cursor.execute(query)
             rows = cursor.fetchall()
             if rows:
@@ -379,7 +388,8 @@ class Request(object):
         conn = connection
         cursor = conn.cursor()
         try:
-            query = "SELECT * FROM requests WHERE ride_id='{}'".format(int(ride_id))
+            query = "SELECT * FROM requests WHERE ride_id='{}'".\
+                    format(int(ride_id))
             cursor.execute(query)
             rows = cursor.fetchall()
             conn.commit()
@@ -393,7 +403,8 @@ class Request(object):
                     }
                     k.append(ride)
                 return {'Status': True, 'Message': k}
-            return {'Status': False, 'Message': 'There are no requests for that ride'}
+            return {'Status': False,
+                    'Message': 'There are no requests for that ride'}
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
 
@@ -407,7 +418,9 @@ class Request(object):
         conn = connection
         cursor = conn.cursor()
         try:
-            query = "UPDATE requests SET accept_status='{}', accept_mode='{}' WHERE id='{}'".format(status, True, request_id)
+            query = "UPDATE requests SET accept_status='{}', \
+                    accept_mode='{}' WHERE id='{}'".\
+                    format(status, True, request_id)
             cursor.execute(query)
             conn.commit()
             return {'Status': True, 'Message': 'request updated succesfuly'}
