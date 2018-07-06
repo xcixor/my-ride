@@ -63,7 +63,7 @@ class TestRideEndpoints(unittest.TestCase):
         resp = json.loads(res.data.decode('UTF-8'))
         access_token = resp.get('access-token')
 
-        response = self.client().post('/api/v2/rides', data=self.ride,
+        response = self.client().post('/api/v2/users/rides', data=self.ride,
                                       headers={'Authorization':
                                       'Bearer '+access_token})
         self.assertEqual(201, response.status_code)
@@ -82,20 +82,20 @@ class TestRideEndpoints(unittest.TestCase):
         resp = json.loads(res.data.decode('UTF-8'))
         access_token = resp.get('access-token')
 
-        response = self.client().post('/api/v2/rides', data=self.ride,
+        response = self.client().post('/api/v2/users/rides', data=self.ride,
                                       headers={'Authorization':
                                                'Bearer '+access_token})
         self.assertEqual(201, response.status_code)
-        result = self.client().get('api/v2/rides', headers={'Authorization':
+        result = self.client().get('api/v2/users/rides', headers={'Authorization':
                                                             'Bearer '+access_token})
-        result = self.client().get('api/v2/rides', headers={'Authorization':
+        result = self.client().get('api/v2/users/rides', headers={'Authorization':
                                                    'Bearer '+access_token})
         self.assertEqual(200, result.status_code)
 
 
     def test_get_inexisting_rides_false(self):
         """Test user gets error message on querying for a non existent ride."""
-        resp = self.client().post('/api/v2/rides')
+        resp = self.client().post('/api/v2/users/rides')
         self.assertEqual(401, resp.status_code)
 
     def test_get_single_ride_if_exist_success(self):
@@ -112,7 +112,7 @@ class TestRideEndpoints(unittest.TestCase):
         resp = json.loads(res.data.decode('UTF-8'))
         access_token = resp.get('access-token')
 
-        response = self.client().post('/api/v2/rides', data=self.ride,
+        response = self.client().post('/api/v2/users/rides', data=self.ride,
                                       headers={'Authorization':
                                                'Bearer '+access_token})
         self.assertEqual(201, response.status_code)
@@ -134,7 +134,7 @@ class TestRideEndpoints(unittest.TestCase):
         resp = json.loads(res.data.decode('UTF-8'))
         access_token = resp.get('access-token')
 
-        response = self.client().post('/api/v2/rides', data=self.ride,
+        response = self.client().post('/api/v2/users/rides', data=self.ride,
                                       headers={'Authorization':
                                                'Bearer '+access_token})
 
@@ -174,7 +174,7 @@ class TestRideEndpoints(unittest.TestCase):
         access_token = resp.get('access-token')
 
         # create ride
-        response = self.client().post('/api/v2/rides', data=self.ride,
+        response = self.client().post('/api/v2/users/rides', data=self.ride,
                                       headers={'Authorization':
                                                'Bearer '+access_token})
 
@@ -202,7 +202,6 @@ class TestRideEndpoints(unittest.TestCase):
         status_resp = self.client().put('/api/v2/users/rides/1/requests/1',
                                         data={'Status': 'Accept'},
                                         headers={'Authorization': 'Bearer '+access_token})
-        some_resp = json.loads(status_resp.data.decode('UTF-8'))
         self.assertEqual(200, status_resp.status_code)
 
     def test_reject_request_success(self):
@@ -222,7 +221,7 @@ class TestRideEndpoints(unittest.TestCase):
         access_token = resp.get('access-token')
 
         # create ride
-        response = self.client().post('/api/v2/rides', data=self.ride,
+        response = self.client().post('/api/v2/users/rides', data=self.ride,
                                       headers={'Authorization':
                                                'Bearer '+access_token})
 
@@ -269,7 +268,7 @@ class TestRideEndpoints(unittest.TestCase):
         access_token = resp.get('access-token')
 
         # create ride
-        response = self.client().post('/api/v2/rides', data=self.ride,
+        response = self.client().post('/api/v2/users/rides', data=self.ride,
                                       headers={'Authorization':
                                                'Bearer '+access_token})
 

@@ -230,7 +230,7 @@ class TestController(unittest.TestCase):
         request_data = {'Status': False}
 
         result = self.controller.set_request_status(request_data, 1, 1)
-        self.assertEqual('request updates succesfuly', result.get('Message'))
+        self.assertEqual('request updated succesfuly', result.get('Message'))
 
     def test_user_can_accept_ride_success(self):
         """Test user can accept a ride successfuly."""
@@ -248,4 +248,4 @@ class TestController(unittest.TestCase):
         request_data = {'Status': True}
 
         result = self.controller.set_request_status(request_data, 1, 1)
-        self.assertEqual('request updates succesfuly', result.get('Message'))
+        self.assertEqual('request updated succesfuly', result.get('Message'))
