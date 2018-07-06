@@ -108,13 +108,15 @@ class Controller(object):
         user = User()
         email = logins.get('Email')
         password = logins.get('Password')
+        if self.is_empty(email):
+            return {'Status': False, 'Message': 'Email cannot be blank'}
         connection = self.create_db_connection()
         res = user.find_user(connection, email)
         if res.get('Status'):
             if password == res.get('Message')[0][2]:
                 return {'Status': True, "Message": 'Valid Credentials'}
-            return {'Status': True, "Message": 'Valid Credentials'}
-        return {'Status': False, 'Message': res.get('Message')}
+            return {'Status': False, "Message": 'Invalid Credentials'}
+        return {'Status': False, 'Message': "Invalid Credentials"}
 
     def is_empty(self, field):
         """Check that a value submitted is not whitespace characters."""
@@ -195,8 +197,11 @@ class Controller(object):
         connection = self.create_db_connection()
         owner_data = app_user.find_user(connection, user).get('Message')
         owner_id = owner_data[0][0]
-        ride_data = ride.get_ride_by_id(connection, ride_id).get('Message')
-        ride_owner = ride_data[0][9]
+        ride = ride.get_ride_by_id(connection, ride_id)
+        if not ride.get('Status'):
+            return {'Status': False, 'Message': ride.get('Message')}
+        ride_data = ride.get('Message')
+        ride_owner = ride_data[0]['Owner Id']
         if owner_id == ride_owner:
             return {'Status': False,
                     "Message": "You cant request your own ride"}

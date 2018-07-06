@@ -28,17 +28,20 @@ class UserSignup(Resource):
 
     def post(self):
         """Resgister user."""
-        email = self.args['Email'],
-        password = self.args['Password'],
-        user_type = self.args['Type'],
+        email = self.args['Email']
+        password = self.args['Password']
+        user_type = self.args['Type']
         confirm_password = self.args['Confirm Password']
 
+        if CONTROLLER.is_empty(user_type):
+            return {"message": "Type cannot be blank"}
+
         driver = False
-        if user_type[0] == 'driver':
+        if user_type == 'driver':
             driver = True
         user_data = {
-            "Email": email[0],
-            "Password": password[0],
+            "Email": email,
+            "Password": password,
             "Confirm Password": confirm_password,
             "Type": driver
         }

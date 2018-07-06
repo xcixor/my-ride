@@ -100,6 +100,8 @@ class User(object):
 
     def find_user(self, connection, email):
         """Retrieve user from db."""
+        if not self.verify_email(email):
+            return {'Status': False, 'Message': 'Invalid email Address!'}
         conn = connection
         cursor = conn.cursor()
         try:
