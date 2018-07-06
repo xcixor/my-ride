@@ -247,5 +247,6 @@ class Controller(object):
             return {'Status': False, 'Message': ride.get('Message')}
         result = request.set_request_status(connection, status, ride_id, request_id)
         if result.get('Status'):
+            app_ride.update_capacity(connection, status, ride_id)
             return {'Status': True, 'Message': result.get('Message')}
         return {'Status': True, 'Message': result.get('Message')}

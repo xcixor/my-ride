@@ -249,6 +249,25 @@ class Ride(object):
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
 
+    def update_capacity(self, connection, request_status, ride_id):
+        """Update no of seats left."""
+        res = self.get_ride_by_id(connection, ride_id)
+        old_capacity = res.get('Message')[0]['Capacity']
+        if res.get('Message'):
+            if request_status:
+                new_cap = old_capacity -1
+                conn = connection
+                cursor = conn.cursor()
+                try:
+                    query = "UPDATE rides SET capacity='{}' WHERE id='{}'".format(new_cap, ride_id)
+                    cursor.execute(query)
+                    conn.commit()
+                    return {'Status': True}
+                except Exception as e:
+                    return {'Status': False, 'Message': e}
+            return {'Status': False}
+        return {'Status': False, 'Message': res.get('Message')}
+
     def delete_rides_table(self, connection):
         """Delete the user table."""
         conn = connection
@@ -287,6 +306,7 @@ class Request(object):
                     email TEXT,\
                     Passenger_id INTEGER REFERENCES users(id),\
                     Ride_Id INTEGER REFERENCES rides(id),\
+                    Accept_Mode Boolean,\
                     Accept_Status Boolean);"
             cursor.execute(query)
             conn.commit()
@@ -303,9 +323,9 @@ class Request(object):
         try:
             conn = connection
             cursor = conn.cursor()
-            query = "INSERT INTO requests (passenger_id, email, ride_id, accept_status)\
-                    VALUES ('{}', '{}', '{}', '{}')".\
-                    format(self.passenger_id, self.email, self.ride_id, self.accept_status)
+            query = "INSERT INTO requests (passenger_id, email, ride_id, accept_mode, accept_status)\
+                    VALUES ('{}', '{}', '{}', '{}', '{}')".\
+                    format(self.passenger_id, self.email, self.ride_id, False, self.accept_status)
             cursor.execute(query)
             conn.commit()
             return {"Status": True, "Message": "Succesfuly made request!"}
@@ -319,6 +339,21 @@ class Request(object):
         try:
             query = "SELECT * FROM requests WHERE passenger_id='{}' AND ride_id='{}'".\
                     format(int(passenger_id), int(ride_id))
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            if rows:
+                return {'Status': True, 'Message': rows}
+            return {'Status': False, 'Message': 'That request was not found'}
+        except psycopg2.Error as e:
+            return {'Status': False, 'Message': '{}'.format(e.pgcode)}
+
+    def get_request_by_id(self, connection, request_id):
+        """Retrieve ride from db."""
+        conn = connection
+        cursor = conn.cursor()
+        try:
+            query = "SELECT * FROM requests WHERE id='{}'".\
+                    format(int(request_id))
             cursor.execute(query)
             rows = cursor.fetchall()
             if rows:
@@ -364,13 +399,17 @@ class Request(object):
 
     def set_request_status(self, connection, status, ride_id, request_id):
         """Accept or reject a request."""
+        res = self.get_request_by_id(connection, request_id)
+        if not res.get('Status'):
+            return {'Status': False, 'Message': 'No such request'}
+        if res.get('Message')[0][4]:
+            return {'Status': False, 'Message': 'Request already updated'}
         conn = connection
         cursor = conn.cursor()
         try:
-            query = "UPDATE requests SET accept_status='{}' WHERE id='{}' \
-                     and ride_id='{}'".format(status, request_id, ride_id)
+            query = "UPDATE requests SET accept_status='{}', accept_mode='{}' WHERE id='{}'".format(status, True, request_id)
             cursor.execute(query)
             conn.commit()
-            return {'Status': True, 'Message': 'request updates succesfuly'}
+            return {'Status': True, 'Message': 'request updated succesfuly'}
         except Exception as e:
             return {'Status': False, 'Message': '{}'.format(e)}
