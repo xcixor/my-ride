@@ -32,6 +32,7 @@ def create_app(configuration):
     db_config = config[configuration].db
     db.init_db(db_config)
     db.create_all()
+    # db.drop_all()
 
     # Register blueprints
     app.register_blueprint(api_v1, url_prefix='/api/v1')

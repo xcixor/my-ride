@@ -9,7 +9,6 @@ class Config:
     debug = False
     SECRET_KEY = os.urandom(30)
 
-
     @staticmethod
     def init_app(app):
         """To perform configuration specific initializations."""
@@ -21,10 +20,10 @@ class Development(Config):
 
     DEBUG = True
     db = {
-        "dbname": os.getenv("dbname"),
-        "user": os.getenv("user"),
-        "password": os.getenv("password"),
-        "host": os.getenv("host"),
+        "dbname": "rides",
+        "user": "rider",
+        "password": "pass123",
+        "host": "localhost",
         "port": "5432"
     }
 
