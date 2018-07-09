@@ -33,10 +33,10 @@ class Testing(Config):
 
     TESTING = True
     db = {
-        "dbname": os.getenv('testdb'),
-        "user": os.getenv('user'),
-        "password": os.getenv('password'),
-        "host": os.getenv('host'),
+        "dbname": 'rides_test',
+        "user": 'rider',
+        "password": 'pass123',
+        "host": 'localhost',
         "port": "5432"
     }
 
