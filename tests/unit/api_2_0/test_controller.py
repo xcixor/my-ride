@@ -17,13 +17,13 @@ class TestController(unittest.TestCase):
 
         self.driver = {
             "Email": "p@gmail.com",
-            "Type": True,
+            "Type": "driver",
             "Password": "pass123",
             "Confirm Password": "pass123"
         }
         self.passenger = {
             "Email": "pr@gmail.com",
-            "Type": False,
+            "Type": "passenger",
             "Password": "pass123",
             "Confirm Password": "pass123"
         }
@@ -80,7 +80,7 @@ class TestController(unittest.TestCase):
         """Test controller can handle data validation."""
         user = {
             "Email": "    ",
-            "Type": True,
+            "Type": "passenger",
             "Password": "pass123",
             "Confirm Password": "pass123"
         }
