@@ -16,9 +16,17 @@ ride-my-way App is a carpooling application that provides drivers with the abili
 * Open a terminal and navigate to where you want the repo to be downloaded
 * Type git clone 'the url you copied above' and press enter to download
 * Set up a virtual env and install the dependencies in requirements.txt
-* Checkout to the branch 158619400-edit-ride
+* Create two databases, one for testing and another for development
+* Create a .env file and export the following variables
+    * dbname - The name of the database for development
+    * testdb - The name of the database for testing
+    * user - The user of the db
+    * password - The password of db user
+    * host - By default this should be localhost
+    * port - By default this should be 5432
+* Checkout to the branch master
 * Run the run.py file to start the server
-* Make the following requests using postman
+* Make the following requests using postman to see if everything is running fine
 ### endpoints
 |Resource urls                                    | Method     | Description               | Requires token  |
 |-------------------------------------------------|------------|---------------------------|-----------------|
@@ -32,7 +40,7 @@ ride-my-way App is a carpooling application that provides drivers with the abili
 | /requests/&lt;ride_id&gt;                       |            |                           |                 |
 | /users/rides/&lt;ride_id&gt;/requests           |   GET      | Fetch a ride's requests   |    TRUE         |
 
-* From there build on this app
+* From there build on the app
 
 ## Documentation
 You can view the documentation of the api at [apiary](https://myride2.docs.apiary.io/)
