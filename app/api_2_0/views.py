@@ -32,18 +32,11 @@ class UserSignup(Resource):
         password = self.args['Password']
         user_type = self.args['Type']
         confirm_password = self.args['Confirm Password']
-
-        if CONTROLLER.is_empty(user_type):
-            return {"message": "Type cannot be blank"}
-
-        driver = False
-        if user_type == 'driver':
-            driver = True
         user_data = {
             "Email": email,
             "Password": password,
             "Confirm Password": confirm_password,
-            "Type": driver
+            "Type": user_type
         }
         resp = CONTROLLER.create_user(user_data)
         if resp.get('Status'):

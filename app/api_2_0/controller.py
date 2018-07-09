@@ -1,6 +1,7 @@
 """Interface views to the models."""
 from datetime import datetime
 import psycopg2
+import re
 
 from app.api_2_0.models import User, Ride, Request
 
@@ -76,13 +77,20 @@ class Controller(object):
         password = user_data.get('Password')
         confirm_password = user_data.get('Confirm Password')
         user_type = user_data.get('Type')
+        if self.is_empty(user_type):
+            return {'Status': False, "Message": "Type cannot be blank"}
+        if user_type.lower() not in ('driver', 'passenger'):
+            return {'Status': False, 'Message': 'Type can only be \'driver\' or \'passenger\''}
+        driver = False
+        if user_type == 'driver':
+            driver = True
         if self.is_empty(email):
             return {'Status': False, 'Message': 'Email cannot be blank'}
         user_details = {
             "email": email,
             "password": password,
             "confirm_password": confirm_password,
-            "user_type": user_type
+            "user_type": driver
         }
         user = User(user_details)
         res = user.create_user(connection)

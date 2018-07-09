@@ -154,8 +154,7 @@ class Ride(object):
                                          No_Plate TEXT, \
                                          Capacity INT, \
                                          Owner_Id INTEGER REFERENCES users(id));"
-            print('Error from controler', cursor.execute(query))
-
+            cursor.execute(query)
             conn.commit()
             return {'Status': True, 'Message': 'Success!'}
         except Exception as e:
